@@ -126,10 +126,12 @@
 	show that the scalar conformal threshold $\qV$ (the empirical
 	quantile of calibration-set forecast errors; see
 	Definition~\ref{def:var_correction}) doubles as a continuous,
-	signed miscalibration diagnostic---and document the main limitations, including
+	signed miscalibration diagnostic with substantial explanatory power for cross-sectional variation in forecast quality---and document the main limitations, including
 	sensitivity to calibration window size, persistence, and
 	structural breaks.
-	
+
+	While regulatory frameworks have increasingly shifted toward Expected Shortfall, VaR remains the standard directly backtestable quantile risk measure; conformal extensions to ES are discussed in Section~\ref{sec:discuss} and Appendix~\ref{app:es}.
+
 	% Data and code availability: removed for blind review
 	
 	%══════════════════════════════════════════════════════════════════════════════
@@ -450,6 +452,8 @@
 	inherit the same formal guarantee but consistently delivers
 	improved conditional coverage.
 
+	Unlike historical simulation, which directly estimates quantiles of raw returns, the rolling conformal correction operates on forecast errors relative to a base model. It therefore preserves model-specific predictive structure when present and defaults to an empirical quantile only when the underlying model is severely misspecified.
+
 	\begin{proposition}[Local coverage of the rolling variant]
 		\label{prop:rolling_coverage}
 		Suppose that within each rolling window $[t-w,\, t-1]$, the
@@ -572,8 +576,8 @@
 	We evaluate five Time Series Foundation Models (TSFMs) and four
 	classical benchmarks (Table~\ref{tab:models}). The TSFMs are
 	used in zero-shot mode, providing a stringent test of their
-	out-of-the-box calibration properties.
-	
+	out-of-the-box calibration properties. Their inclusion is not intended to assess their suitability for financial forecasting per se, but to provide a heterogeneous set of predictive distributions with varying degrees of miscalibration, enabling evaluation of the calibration framework across a broad spectrum of model quality.
+
 	All TSFM checkpoints predate the evaluation period.
 	Chronos-Small and Chronos-Mini (v1.2, released March 2024)
 	were trained on a large corpus of public time series
@@ -721,7 +725,9 @@
 	Conformal recalibration transforms all forecasters into
 	effectively Basel-compliant risk models. Across 216 model--asset
 	pairs, 187 achieve Green status (86.6\%), 29 fall into Yellow,
-	and none enter Red (Table~\ref{tab:master}). This headline rate
+	and none enter Red (Table~\ref{tab:master}).
+	The Green rate is not mechanically guaranteed: the correction is estimated on a finite calibration set and evaluated entirely out-of-sample under temporal dependence. Coverage failures therefore remain possible and are observed. The rolling variant additionally improves conditional coverage as measured by Christoffersen tests (Table~\ref{tab:rolling_vs_static}), indicating that the method captures time-varying miscalibration rather than merely enforcing a fixed violation rate.
+	This headline rate
 	is not inflated by the replacement regime: among the 168 pairs
 	where $|\hat{q}_V|/|\mathrm{VaR}_{\mathrm{raw}}| < 1$ (the
 	base model retains meaningful predictive content), 149 (88.7\%)
@@ -1230,7 +1236,8 @@
 	estimation. A simple base model with a one-parameter conformal
 	shift outperforms dedicated tail risk approaches that involve
 	substantially greater implementation complexity.
-	This result reflects the short 250-day rolling window and associated estimation noise in parametric tail models; under longer estimation samples or carefully tuned thresholds, EVT-based methods may perform differently.
+	This result reflects the 250-day rolling window---consistent with practical implementations under regulatory conventions---and associated estimation noise in parametric tail models; under longer estimation samples or carefully tuned thresholds, EVT-based methods may perform differently.
+	Adaptive Conformal Inference \citep{gibbs2021adaptive} yields comparable coverage but typically wider VaR intervals (Table~\ref{tab:baselines}), consistent with its symmetric adjustment mechanism.
 
 	\begin{table}[H]
 		\centering
@@ -1246,6 +1253,7 @@
 			Scale correction       & .055 &  90/216 &  8.69 & .032 & 68.1 \\
 			Historical quantile    & .010 &  99/216 &  5.89 & .041 & 81.0 \\
 			QR on residuals        & .011 &  65/216 &  5.31 & .038 & 82.4 \\
+			ACI \citep{gibbs2021adaptive} & .013 & 6/216 & 5.37 & .040 & 96.3 \\
 			Isotonic regression    & .017 &    ---  &  ---  & ---  & 53.7 \\
 			\midrule
 			\multicolumn{6}{@{}l}{\textit{Dedicated VaR models (per-asset, not post-hoc calibration)}} \\[2pt]
@@ -1283,6 +1291,30 @@
 	(Section~\ref{sec:results_raw}) screens out models operating in
 	the replacement regime, retaining only those with genuine
 	predictive content in the tail.
+
+	Fissler--Ziegel scores provide a joint diagnostic for VaR and Expected Shortfall \citep{fissler2016higher}. Conformal correction improves joint tail performance for most models, particularly those with severe miscalibration, while improvements are naturally smaller for already well-calibrated specifications. These results should be interpreted as diagnostic, as the ES component remains heuristic.
+
+	\begin{table}[H]
+		\centering
+		\caption{Fissler--Ziegel FZ$_0$ joint VaR-ES scores (mean across 24 assets, $\alpha = 0.01$). Lower is better. The ES component uses the Gaussian heuristic (Appendix~\ref{app:es}). Chronos raw scores are undefined due to severe miscalibration ($|\qV|/|\mathrm{VaR}_{\mathrm{raw}}| > 1$).}
+		\label{tab:fz_scores}
+		\footnotesize
+		\begin{tabular}{@{}lrrr@{}}
+			\toprule
+			Model & Raw FZ$_0$ & Corrected FZ$_0$ & Improvement\,\% \\
+			\midrule
+			Chronos-Small      & ---   & $-$2.96 & ---  \\
+			Chronos-Mini       & ---   & $-$2.98 & ---  \\
+			TimesFM 2.5        & $-$2.89 & $-$3.20 & 10.7 \\
+			Moirai 2.0         & $-$2.96 & $-$3.00 &  1.4 \\
+			Lag-Llama          & $-$2.46 & $-$3.10 & 26.0 \\
+			GJR-GARCH          & $-$3.18 & $-$3.25 &  2.1 \\
+			GARCH-N            & $-$3.17 & $-$3.26 &  2.8 \\
+			Hist.\ Sim.        & $-$2.93 & $-$3.06 &  4.6 \\
+			EWMA               & $-$3.10 & $-$3.23 &  4.2 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
 
 	An open question is whether fine-tuning TSFMs on financial
 	data would resolve the underlying miscalibration, rendering
@@ -1350,7 +1382,8 @@
 	method enforces violation frequency without improving the
 	underlying predictive distribution---it is a calibration layer,
 	not a substitute for model quality.
-	
+	The framework does not recover structural predictive content where none exists; in extreme miscalibration regimes, it provides a statistically valid empirical fallback rather than a model improvement.
+
 	Several directions remain open: extending distribution-free
 	calibration to Expected Shortfall, developing formal guarantees
 	for rolling implementations under dependence, and integrating
