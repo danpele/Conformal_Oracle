@@ -143,9 +143,9 @@
 	miscalibration across financial datasets, and
 	\citet{pele2025llmvar} highlight tail compression in
 	instruction-tuned models. These findings motivate post-hoc
-	correction approaches. This study provides the first systematic
+	correction approaches. This study provides a systematic
 	calibration audit of time series foundation models for financial
-	tail risk, covering five architectures across 24 assets over a
+	tail risk---the broadest to date in terms of model diversity, covering five architectures across 24 assets over a
 	quarter-century sample.
 
 	Established backtesting procedures---unconditional coverage
@@ -1140,7 +1140,6 @@
 	%══════════════════════════════════════════════════════════════════════════════
 	\section{Discussion}
 	\label{sec:discuss}
-	\label{sec:failure}
 
 	The method empirically corrects heterogeneous miscalibration
 	across TSFM architectures without requiring knowledge of the
@@ -1185,6 +1184,7 @@
 		\label{fig:capital_charge}
 	\end{figure}
 
+	\label{sec:failure}
 	Four systematic failure modes limit the correction:
 	\emph{(i)}~small calibration sets ($n_{\mathrm{cal}} < 200$)
 	produce high-variance corrections;
@@ -1248,9 +1248,9 @@
 	violation indicators on $\hat{q}_t^{lo}$, which fails to
 	produce a scalar VaR for most pairs (hence missing entries); and
 	(v)~\emph{Adaptive Conformal Inference} (ACI) \citep{gibbs2021adaptive}, which dynamically updates the target coverage level based on past violations.
-	Conformal correction achieves the lowest QS (5.24 $\times 10^{-4}$) and highest Green rate (86.6\%), followed by quantile regression on residuals (5.31, 82.4\%). The empirical ordering in Table~\ref{tab:baselines}---where scalar and near-scalar corrections dominate more flexible alternatives---is consistent with the tail-sparsity argument formalized in Proposition~\ref{prop:tail_sparsity}: at $\alpha = 0.01$, the effective tail sample is too small to support multi-parameter recalibration.
+	Among static procedures, the one-parameter conformal shift achieves the lowest Quantile Score (5.24 $\times 10^{-4}$) and the sharpest VaR intervals, while Adaptive Conformal Inference \citep{gibbs2021adaptive} achieves a higher static Green rate (96.3\% vs.\ 86.6\%) at the cost of wider bands---placing static ACI and static conformal on a calibration--sharpness frontier. The rolling conformal variant, however, achieves a Green rate of 213/216 = 98.6\% together with competitive sharpness (Table~\ref{tab:rolling_vs_static}), resolving the apparent trade-off: the rolling correction dominates static ACI on the Green rate while retaining the sharpness advantage of the fixed-$\alpha$ conformal shift. The empirical ordering is consistent with Proposition~\ref{prop:tail_sparsity}: at $\alpha = 0.01$ the effective tail sample is too small to support multi-parameter recalibration, so low-dimensional corrections achieve robust performance without incurring the variance penalties of more flexible alternatives, and temporal adaptation via a rolling window delivers further coverage gains without enlarging the parameter count.
 
-	The comparison extends to purpose-built VaR models. GARCH-N with conformal correction (Table~\ref{tab:master}, Panel~A: QS $= 4.7 \times 10^{-4}$, 21/24 Green) dominates both EVT-POT (QS $= 5.5$, 18/24 Green) and filtered historical simulation (QS $= 5.6$, 13/24 Green) under the short 250-day rolling windows typical of regulatory implementations, despite requiring no tail distribution fitting, no threshold selection, and no GPD estimation. Under longer estimation samples or carefully tuned thresholds, EVT-based methods may perform differently; the result should therefore be read as evidence of robustness under short-sample conditions rather than general dominance over parametric tail models. Table~\ref{tab:baselines} compares static recalibration methods head-to-head. Among static procedures, Adaptive Conformal Inference \citep{gibbs2021adaptive} achieves a higher Green rate than the static conformal shift at the cost of wider VaR intervals, placing static ACI and static conformal on a calibration--sharpness frontier. The rolling conformal variant, however, achieves a Green rate of 213/216 = 98.6\% together with competitive sharpness (Table~\ref{tab:rolling_vs_static}), resolving the apparent trade-off: the rolling correction dominates static ACI on the Green rate while retaining the sharpness advantage of the fixed-$\alpha$ conformal shift. This empirical ordering is consistent with Proposition~\ref{prop:tail_sparsity}: low-dimensional corrections achieve robust performance without incurring the variance penalties of more flexible alternatives, and temporal adaptation via a rolling window delivers further coverage gains without enlarging the parameter count.
+	The comparison extends to purpose-built VaR models. GARCH-N with conformal correction (Table~\ref{tab:master}, Panel~A: QS $= 4.7 \times 10^{-4}$, 21/24 Green) dominates both EVT-POT (QS $= 5.5$, 18/24 Green) and filtered historical simulation (QS $= 5.6$, 13/24 Green) under the short 250-day rolling windows typical of regulatory implementations, despite requiring no tail distribution fitting, no threshold selection, and no GPD estimation. Under longer estimation samples or carefully tuned thresholds, EVT-based methods may perform differently; the result should therefore be read as evidence of robustness under short-sample conditions rather than general dominance over parametric tail models.
 
 	\begin{table}[H]
 		\centering
@@ -1602,7 +1602,7 @@
 	regime changes \emph{between} windows provided that within each
 	250-day block the score process is approximately stationary.
 	For $w = 250$, the bound gives $\Delta_{250} \approx 0.15$,
-	guaranteeing $\geq$84\% coverage per window---conservative but
+	yielding a heuristic coverage floor of $\geq$84\% per window---conservative but
 	non-vacuous. The empirical rolling coverage of 99.1\%
 	(Table~\ref{tab:rolling_vs_static}) substantially exceeds this
 	floor, consistent with the conservativeness observed for the
