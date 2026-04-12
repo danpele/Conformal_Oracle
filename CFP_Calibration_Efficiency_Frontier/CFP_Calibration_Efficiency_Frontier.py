@@ -27,7 +27,7 @@ FIG.mkdir(exist_ok=True)
 ALPHA = 0.01
 F_CAL = 0.70
 
-# ── Style (CLAUDE.md) ────────────────────────────────────────────────────
+# ── Style ────────────────────────────────────────────────────
 plt.rcParams.update({
     'font.family': 'serif', 'font.size': 11,
     'axes.grid': False,
