@@ -55,25 +55,13 @@
 		
 		%─── PART 2: Abstract ───────────────────────────────────────────────────────
 		\begin{abstract}
-			Tail risk forecasts from heterogeneous models---classical and
-			foundation-model-based---exhibit systematic miscalibration that can be diagnosed and corrected using a simple scalar functional. This paper
-			proposes a distribution-free post-processing framework that
-			recalibrates Value-at-Risk forecasts using one-sided conformal
-			prediction, requiring no distributional assumptions or model
-			retraining. An approximate asymptotic coverage result is established for the static split-conformal construction under
-			$\beta$-mixing dependence, providing asymptotic support for calibration under weak dependence, without implying finite-sample guarantees. The scalar conformal threshold
-			$\hat{q}_V$ serves both as the corrective shift restoring empirical coverage
-			and as a continuous, signed diagnostic of tail miscalibration
-			severity.
-			
-			The framework is evaluated on five time series foundation models
-			and four classical benchmarks across 24 financial assets over
-			2000--2026. Conformal recalibration restores nominal coverage in finite samples across a wide range of models and assets, subject to estimation error and dependence effects, achieving high levels of Basel Green Zone compliance with the rolling implementation approaching full compliance in the evaluated sample, revealing an empirical calibration--efficiency trade-off.
-			The results provide strong empirical evidence that forecast validity can be treated as separable from forecast generation: a simple, distribution-free post-processing layer can empirically restore tail coverage without modifying the underlying predictive model.
-			
+			Tail risk forecasts from heterogeneous models---classical and foundation-model-based---exhibit systematic miscalibration that a single scalar functional can diagnose and correct. This paper proposes a distribution-free post-processing framework that recalibrates Value-at-Risk forecasts using one-sided conformal prediction, requiring no distributional assumptions or model retraining. An approximate coverage guarantee is established under $\beta$-mixing dependence for the static split-conformal construction. The scalar conformal threshold $\hat{q}_V$ serves both as the corrective shift restoring coverage and as a continuous, signed diagnostic of tail miscalibration severity.
+
+			The framework is evaluated on five time series foundation models and four classical benchmarks across 24 financial assets over 2000--2026. Conformal recalibration empirically restores nominal coverage across a wide range of model--asset combinations (86.6\% Basel Green Zone with the static split; near-full compliance with the rolling variant), revealing a calibration--efficiency trade-off. The results establish that forecast validity can be separated from forecast generation: a one-parameter, distribution-free post-processing layer empirically restores tail coverage without modifying the underlying predictive model.
+
 			\bigskip\noindent
 			\textbf{Keywords:} Conformal prediction; probabilistic forecast calibration; Value at Risk; time series foundation models; distribution-free recalibration; temporal dependence; quantile score
-			
+
 			\bigskip\noindent
 			\textbf{JEL:} C14\,|\,C53\,|\,C58\,|\,G17\,|\,G32
 		\end{abstract}
@@ -100,34 +88,9 @@
 	\citep{christoffersen1998, nolde2017elicitability,
 		goel2024tsfmvar, pele2025llmvar}.
 	
-	This paper addresses a central problem in probabilistic forecasting: how to transform arbitrary predictive distributions into calibrated forecasts under temporal dependence. We adopt a post-processing perspective, treating calibration as a distinct layer applied to arbitrary forecast outputs. This separation is particularly relevant in financial risk management, where regulatory evaluation depends on coverage rather than predictive accuracy.
-	More broadly, this perspective aligns with the forecast calibration literature, where the objective is not to improve predictive models per se, but to ensure that their probabilistic outputs satisfy statistical validity criteria. We propose a
-	one-sided conformal correction that operates as a model-agnostic
-	post-processing layer---requiring neither retraining nor
-	distributional assumptions---and targets calibration as a distinct layer from predictive accuracy, in line with the forecast post-processing paradigm. In this sense, it belongs to the forecast
-	post-processing tradition of \citet{gneiting2013combining},
-	\citet{brehmer2021properification}, and
-	\citet{taillardat2016calibrated}, while focusing specifically
-	on tail risk measures under dependence.
-	
-	The contribution rests on a specific claim: under sparse tail data and temporal dependence, a one-parameter post-processing rule is empirically close to the right complexity class for quantile recalibration, and its correction term has independent diagnostic value. First, we introduce the one-sided
-	conformal recalibration procedure and establish an approximate
-	coverage result under $\beta$-mixing conditions, providing
-	asymptotic support without relying on i.i.d.\ assumptions.
-	Second, we conduct a large-scale empirical evaluation across
-	five time series foundation models (TSFMs), four parametric
-	benchmarks, and 24 financial assets over 2000--2026. Third, we
-	show that the scalar conformal threshold $\qV$ (the empirical
-	quantile of calibration-set forecast errors; see
-	Definition~\ref{def:var_correction}) doubles as a continuous,
-	signed miscalibration diagnostic with substantial explanatory power for cross-sectional variation in forecast quality---and document the main limitations, including
-	sensitivity to calibration window size, persistence, and
-	structural breaks.
-	This reframes conformal correction not only as a calibration tool, but as a diagnostic lens for model misspecification.
+	This paper proposes a one-sided conformal correction that operates as a model-agnostic post-processing layer---requiring neither retraining nor distributional assumptions---and targets calibration rather than predictive accuracy. The contribution rests on a specific claim: under sparse tail data and temporal dependence, a one-parameter post-processing rule is empirically close to the right complexity class for quantile recalibration, and its correction term has independent diagnostic value. In this sense, the work belongs to the forecast post-processing tradition of \citet{gneiting2013combining}, \citet{brehmer2021properification}, and \citet{taillardat2016calibrated}, while focusing specifically on tail risk measures under dependence. While regulatory frameworks have increasingly shifted toward Expected Shortfall, VaR remains the only tail risk measure with a well-defined elicitability structure supporting direct backtesting \citep{gneiting2011making}; conformal extensions to ES are discussed in Section~\ref{sec:discuss} and Appendix~\ref{app:es}.
 
-	While regulatory frameworks have increasingly shifted toward Expected Shortfall, VaR remains the standard directly backtestable quantile risk measure; conformal extensions to ES are discussed in Section~\ref{sec:discuss} and Appendix~\ref{app:es}. Accordingly, Expected Shortfall evaluation is included as a complementary diagnostic rather than a primary calibration target.
-	The contribution of the paper is therefore not to improve the underlying predictive model, but to address a core forecasting problem: how to transform arbitrary probabilistic forecasts into statistically valid tail quantile forecasts under temporal dependence. In doing so, we separate forecast generation from forecast calibration, providing a model-agnostic correction that applies uniformly across heterogeneous forecasting systems. The static construction provides asymptotic support for coverage validity; the rolling variant is supported by empirical evidence across the datasets considered.
-	The contribution should be interpreted as a framework for forecast calibration rather than a method for improving predictive models. The objective is to restore statistical validity of forecast outputs, not to enhance the underlying predictive structure.
+	The contribution is threefold. First, we introduce the one-sided conformal recalibration procedure and establish an approximate coverage result under $\beta$-mixing conditions, providing asymptotic support without relying on i.i.d.\ assumptions. Second, we conduct a large-scale empirical evaluation across five time series foundation models (TSFMs), four parametric benchmarks, and 24 financial assets over 2000--2026. This study provides the first systematic calibration audit of time series foundation models for financial tail risk. Third, we show that the scalar conformal threshold $\qV$ (the empirical quantile of calibration-set forecast errors; see Definition~\ref{def:var_correction}) doubles as a continuous, signed miscalibration diagnostic with substantial explanatory power for cross-sectional variation in forecast quality---and document the main limitations, including sensitivity to calibration window size, persistence, and structural breaks.
 
 	% Data and code availability: removed for blind review
 	
@@ -1063,8 +1026,6 @@
 	\label{sec:discuss}
 	\label{sec:failure}
 
-	The theoretical guarantee established in Section~\ref{sec:validity} applies strictly to the static split-conformal construction. The rolling implementation used in practice is an empirical deployment strategy whose strong empirical performance is documented in Section~\ref{sec:rolling_results} but is not supported by an equivalent formal guarantee. No claim is made that the rolling procedure satisfies the same asymptotic guarantees as the static construction.
-
 	The conformal framework empirically corrects heterogeneous miscalibration
 	across TSFM architectures without requiring knowledge of the
 	underlying failure mechanism. The cross-sectional results
@@ -1146,7 +1107,7 @@
 	Conformal correction achieves the lowest QS (5.24 $\times 10^{-4}$) and highest Green rate (86.6\%), followed by quantile regression on residuals (5.31, 82.4\%). More flexible approaches perform strictly worse, reflecting a fundamental sample-size constraint: at $\alpha = 0.01$ with approximately 1{,}500 test observations per asset, the expected number of tail violations is ${\sim}15$, so any method with $k$ free parameters must estimate its additional degrees of freedom from $O(\alpha T)$ effective tail observations, leading to high variance that offsets any bias reduction. The single-parameter conformal shift and quantile regression on residuals---which reduces to a near-scalar correction at extreme quantiles---cluster at the top, consistent with the one-parameter rule being empirically near-optimal among low-parameter corrections in finite samples at extreme quantiles.
 
 	The comparison extends to purpose-built VaR models. GARCH-N with conformal correction (Table~\ref{tab:master}, Panel~A: QS $= 4.7 \times 10^{-4}$, 21/24 Green) dominates both EVT-POT (QS $= 5.5$, 18/24 Green) and filtered historical simulation (QS $= 5.6$, 13/24 Green) under the short 250-day rolling windows typical of regulatory implementations, despite requiring no tail distribution fitting, no threshold selection, and no GPD estimation. Under longer estimation samples or carefully tuned thresholds, EVT-based methods may perform differently; the result should therefore be read as evidence of robustness under short-sample conditions rather than general dominance over parametric tail models.
-	Adaptive Conformal Inference \citep{gibbs2021adaptive} achieves a higher Green rate than the proposed method, while the proposed method achieves a lower Quantile Score and narrower VaR intervals (Table~\ref{tab:baselines}). This reflects a genuine calibration--sharpness trade-off: ACI's dynamic $\alpha_t$ adjustment prioritises coverage at the cost of wider bands, whereas the fixed-$\alpha$ conformal shift prioritises efficiency. Neither approach dominates; the choice depends on whether the practitioner values tighter capital reserves or more robust coverage.
+	Adaptive Conformal Inference \citep{gibbs2021adaptive} achieves a higher Green rate than the proposed method, while the proposed method achieves a lower Quantile Score and narrower VaR intervals (Table~\ref{tab:baselines}). This reflects a genuine calibration--sharpness trade-off: ACI's dynamic $\alpha_t$ adjustment prioritises coverage at the cost of wider bands, whereas the fixed-$\alpha$ conformal shift prioritises efficiency. Neither approach dominates; the choice depends on whether the practitioner values tighter capital reserves or more robust coverage. The two methods lie on a calibration--efficiency frontier rather than a dominance ordering.
 
 	\begin{table}[H]
 		\centering
