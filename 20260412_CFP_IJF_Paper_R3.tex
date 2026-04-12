@@ -5,7 +5,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb,amsthm,bm,bbm}
-\usepackage{booktabs,colortbl,xcolor,array,multirow,threeparttable}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{booktabs,colortbl,array,multirow,threeparttable}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \usepackage{graphicx,float,caption,subcaption}
 \graphicspath{{figures/}}
@@ -13,7 +14,6 @@
 \usepackage{natbib}
 \usepackage{hyperref}
 \usepackage{setspace,microtype,enumitem}
-\usepackage[dvipsnames]{xcolor}
 \onehalfspacing
 
 %─── Colours ─────────────────────────────────────────────────────────────────
@@ -114,9 +114,9 @@
 
 	We study a one-parameter, model-agnostic recalibration rule based on one-sided conformal prediction: a scalar shift applied to predicted lower quantiles, estimated from past forecast errors. Although minimal in form, this correction is shown to be statistically well-suited to the tail sparsity constraint across a wide range of forecasting models and asset classes. Crucially, the correction term itself---the conformal threshold $\qV$ (Definition~\ref{def:var_correction})---admits a natural interpretation as a continuous, signed measure of tail misspecification. It explains a substantial fraction of the cross-sectional variation in forecast performance (partial $R^2 = 54.6\%$; Section~\ref{sec:results_raw}) and anticipates backtesting failures, thereby extending the role of recalibration from a corrective device to a tool for model assessment.
 
-	On the theoretical side, we establish an asymptotic coverage result for the static split-conformal procedure under $\beta$-mixing dependence (Theorem~\ref{thm:dependent_conformal_var}). This result provides formal support for the direction of the correction but does not extend to the rolling implementation used in practice; empirical validity of the rolling variant is demonstrated separately. The empirical evaluation covers five time series foundation models (TSFMs), four parametric benchmarks, and 24 financial assets over 2000--2026---a systematic calibration audit of time series foundation models for financial tail risk---the broadest to date in terms of model diversity (five architectures), asset coverage (24 series across five classes), and sample length (2000--2026)---using Kupiec, Christoffersen, and Basel traffic-light tests. Conformal extensions to Expected Shortfall, which lacks the elicitability structure of VaR \citep{gneiting2011making}, are discussed in Section~\ref{sec:discuss} and Appendix~\ref{app:es}.
+	On the theoretical side, we establish an asymptotic coverage result for the static split-conformal procedure under $\beta$-mixing dependence (Theorem~\ref{thm:dependent_conformal_var}). This result provides formal support for the direction of the correction but does not extend to the rolling implementation used in practice; empirical validity of the rolling variant is demonstrated separately. The empirical evaluation covers five time series foundation models (TSFMs), four parametric benchmarks, and 24 financial assets over 2000--2026. This constitutes a systematic calibration audit of time series foundation models for financial tail risk---the broadest to date in terms of model diversity (five architectures), asset coverage (24 series across five classes), and sample length---using Kupiec, Christoffersen, and Basel traffic-light tests. Conformal extensions to Expected Shortfall, which lacks the elicitability structure of VaR \citep{gneiting2011making}, are discussed in Section~\ref{sec:discuss} and Appendix~\ref{app:es}.
 
-	The contribution of the paper is therefore not the introduction of a new conformal algorithm, but the identification of the appropriate statistical complexity class for tail recalibration under dependence. A one-parameter adjustment achieves a favourable bias--variance trade-off in sparse tail regimes, while more flexible alternatives---isotonic regression, multi-parameter recalibration, adaptive conformal inference---either overfit or trade sharpness for coverage on a calibration--efficiency frontier (Table~\ref{tab:baselines}). The work belongs to the forecast post-processing tradition of \citet{gneiting2013combining}, \citet{brehmer2021properification}, and \citet{taillardat2016calibrated}, focusing specifically on tail risk measures under dependence. The contribution is not the functional form of the correction---which is deliberately minimal---but the identification of the statistically admissible complexity class for tail recalibration under sparsity.
+	The contribution of the paper is therefore not the introduction of a new conformal algorithm, but the identification of the appropriate statistical complexity class for tail recalibration under dependence. A one-parameter adjustment achieves a favourable bias--variance trade-off in sparse tail regimes, while more flexible alternatives---isotonic regression, multi-parameter recalibration, adaptive conformal inference---either overfit or trade sharpness for coverage on a calibration--efficiency frontier (Table~\ref{tab:baselines}). The work belongs to the forecast post-processing tradition of \citet{gneiting2013combining}, \citet{brehmer2021properification}, and \citet{taillardat2016calibrated}, focusing specifically on tail risk measures under dependence.
 
 	Data, code, and regular updates for this paper are available via the Quantlet \quantlet{https://github.com/QuantLet/Conformal_Oracle/} and Quantinar \quantinar{https://github.com/QuantLet/Conformal_Oracle/} platforms.
 	
@@ -233,8 +233,8 @@
 		\Fhat_t^M(x) = \frac{1}{N}\sum_{i=1}^{N}
 		\1(\hat{r}_t^{i;M}\leq x).
 	\end{align}
-	Value-at-Risk and Expected Shortfall are computed as
-	\citep{pele2025llmvar}:
+	Value-at-Risk and Expected Shortfall are computed following
+	\citet{pele2025llmvar}:
 	\begin{align}
 		\widehat{\VaR}_t^{\alpha;M}
 		&= -(\Fhat_t^M)^{-1}(\alpha), \\
@@ -287,7 +287,7 @@
 		Z_2 = \sum_{t=1}^N
 		\frac{I_t\, r_t}{N\alpha\,\widehat{\ES}_t^\alpha} + 1,
 	\end{equation}
-	where $I_t = \1(r_t \leq -\widehat{\VaR}_t^\beta)$. These
+	where $I_t = \1(r_t \leq -\widehat{\VaR}_t^\beta)$ with $\beta = \alpha$. These
 	diagnostics detect miscalibration but do not quantify its
 	magnitude or provide a correction mechanism.
 	To complement backtesting diagnostics with a joint scoring perspective, we also consider evaluation of Value-at-Risk and Expected Shortfall using the Fissler--Ziegel (FZ) scoring framework \citep{fissler2016higher}, which is strictly consistent for the pair (VaR, ES). Given that the ES component in our framework is obtained via a heuristic correction (Appendix~\ref{app:es}), FZ scores are interpreted as diagnostic rather than as a formal validation criterion; empirical results are reported in Section~\ref{sec:forecast_eval} and Table~\ref{tab:fz_scores}.
@@ -352,8 +352,6 @@
 	Throughout, $\widehat{\VaR}^{\,\mathrm{raw}}_t$ denotes the uncorrected base forecast, $\widehat{\VaR}^{\,\mathrm{cp}}_t$ the static conformally corrected forecast (eq.~\ref{eq:var_cp}), $\widehat{\VaR}^{\,\mathrm{roll}}_t$ the rolling corrected forecast (eq.~\ref{eq:var_roll}), and $\widehat{\VaR}^{\,\mathrm{sc}}_t$ the scale-corrected baseline (Table~\ref{tab:baselines}).
 
 	We report $\widehat{\VaR}_t^{\,\mathrm{cp}}$ as the corrected quantile level (expressed in quantile form) induced by the conformal shift, preserving standard VaR interpretation.
-	The contribution lies not in the functional form of the correction---which is deliberately minimal---but in the unified mechanism that detects, quantifies, and corrects miscalibration across heterogeneous forecasting models.
-
 	The correction restores violation frequency but does not
 	modify the shape of the predictive distribution. This design
 	prioritises robustness over flexibility: a one-parameter
@@ -695,7 +693,7 @@
 	returns. The $|\qV|/|\VaR|$ ratio diagnoses this: for
 	Chronos, $\qV \approx 0.035$--$0.039$ exceeds the mean raw
 	$|\VaR|$ of $\approx 0.009$, confirming that the correction
-	dominates the forecast (indicated by $\dagger$ in
+	dominates the forecast (Panel~B of
 	Table~\ref{tab:master}). For TimesFM and the parametric
 	benchmarks, $|\qV| < 0.01$ remains small relative to the
 	forecast, indicating genuine predictive content in the tail.
@@ -941,7 +939,7 @@
 	
 	\begin{table}[H]
 		\centering
-		\caption{Panel-pooled backtest by asset class ($\alpha = 0.01$)}
+		\caption{Panel-pooled backtest by asset class, static conformal correction ($\alpha = 0.01$)}
 		\label{tab:panel_by_class}
 		\footnotesize
 		\begin{tabular}{@{}lrrrr@{}}
@@ -1248,7 +1246,7 @@
 	violation indicators on $\hat{q}_t^{lo}$, which fails to
 	produce a scalar VaR for most pairs (hence missing entries); and
 	(v)~\emph{Adaptive Conformal Inference} (ACI) \citep{gibbs2021adaptive}, which dynamically updates the target coverage level based on past violations.
-	Among static procedures, the one-parameter conformal shift achieves the lowest Quantile Score (5.24 $\times 10^{-4}$) and the sharpest VaR intervals, while Adaptive Conformal Inference \citep{gibbs2021adaptive} achieves a higher static Green rate (96.3\% vs.\ 86.6\%) at the cost of wider bands---placing static ACI and static conformal on a calibration--sharpness frontier. The rolling conformal variant, however, achieves a Green rate of 213/216 = 98.6\% together with competitive sharpness (Table~\ref{tab:rolling_vs_static}), resolving the apparent trade-off: the rolling correction dominates static ACI on the Green rate while retaining the sharpness advantage of the fixed-$\alpha$ conformal shift. The empirical ordering is consistent with Proposition~\ref{prop:tail_sparsity}: at $\alpha = 0.01$ the effective tail sample is too small to support multi-parameter recalibration, so low-dimensional corrections achieve robust performance without incurring the variance penalties of more flexible alternatives, and temporal adaptation via a rolling window delivers further coverage gains without enlarging the parameter count.
+	Among static procedures, the one-parameter conformal shift achieves the lowest Quantile Score (5.24 $\times 10^{-4}$) and competitive sharpness, while Adaptive Conformal Inference \citep{gibbs2021adaptive} achieves a higher static Green rate (96.3\% vs.\ 86.6\%) at the cost of wider bands---placing static ACI and static conformal at different points on a calibration--sharpness frontier. The rolling conformal variant achieves a higher Green rate than static ACI (213/216 = 98.6\% vs.\ 96.3\%) at the cost of modestly wider intervals (width .043 vs.\ .040) and marginally higher QS (5.44 vs.\ 5.37), confirming that the two methods occupy different positions on the calibration--efficiency frontier rather than one dominating the other. The empirical ordering is consistent with Proposition~\ref{prop:tail_sparsity}: at $\alpha = 0.01$ the effective tail sample is too small to support multi-parameter recalibration, so low-dimensional corrections achieve robust performance without incurring the variance penalties of more flexible alternatives, and temporal adaptation via a rolling window delivers additional coverage gains without enlarging the parameter count.
 
 	The comparison extends to purpose-built VaR models. GARCH-N with conformal correction (Table~\ref{tab:master}, Panel~A: QS $= 4.7 \times 10^{-4}$, 21/24 Green) dominates both EVT-POT (QS $= 5.5$, 18/24 Green) and filtered historical simulation (QS $= 5.6$, 13/24 Green) under the short 250-day rolling windows typical of regulatory implementations, despite requiring no tail distribution fitting, no threshold selection, and no GPD estimation. Under longer estimation samples or carefully tuned thresholds, EVT-based methods may perform differently; the result should therefore be read as evidence of robustness under short-sample conditions rather than general dominance over parametric tail models.
 
@@ -1351,13 +1349,13 @@
 	Several directions remain open, including the development of formal guarantees for rolling implementations under dependence and the extension of distribution-free calibration to Expected Shortfall. More broadly, the findings contribute to the understanding of forecast recalibration under dependence, highlighting the fundamental role of sparsity in shaping optimal statistical procedures.
 
 	\section*{Data and Code Availability}
-	The full replication pipeline---from data download through TSFM inference, conformal calibration, backtesting, and figure generation---is available at the Quantlet \quantlet{https://github.com/QuantLet/Conformal_Oracle/}  at \url{https://github.com/QuantLet/Conformal_Oracle}. The repository includes all Monte Carlo simulation code (Section~\ref{sec:simulation}) in addition to the empirical pipeline. All return data are sourced from Yahoo Finance (public). All foundation model checkpoints are open-weight and hosted on HuggingFace (Table~\ref{tab:models}); no proprietary API access is required.
+	The full replication pipeline---from data download through TSFM inference, conformal calibration, backtesting, and figure generation---is available via the Quantlet \quantlet{https://github.com/QuantLet/Conformal_Oracle/} repository at \url{https://github.com/QuantLet/Conformal_Oracle}. The repository includes all Monte Carlo simulation code (Section~\ref{sec:simulation}) in addition to the empirical pipeline. All return data are sourced from Yahoo Finance (public). All foundation model checkpoints are open-weight and hosted on HuggingFace (Table~\ref{tab:models}); no proprietary API access is required.
 	
 	\section*{Acknowledgements}
 	This paper is supported through the project ``IDA Institute of Digital Assets'', CF166/15.11.2022, CN760046/23.05.2023; the project ``AI for Energy Finance (AI4EFin)'', CF162/15.11.2022, CN760048/23.05.2023, financed under the Romania's National Recovery and Resilience Plan, Apel nr. PNRR-III-C9-2022-I8; and the Marie Skłodowska-Curie Actions under the European Union's Horizon Europe research and innovation program for the Industrial Doctoral Network on Digital Finance, acronym DIGITAL, Project No. 101119635.
 	
-	We acknowledge the support of the project "MA'AT – Autonomous
-	Model for Textual Assistance", SMIS Code 2021+: 330941, funding contract no. 390090/11.11.2025, project co-financed by the European Regional Development Fund through the Smart Growth, Digitalisation and Financial Instruments Programme 2021–2027 (POCIDIF).
+	We acknowledge the support of the project ``MA'AT -- Autonomous
+	Model for Textual Assistance'', SMIS Code 2021+: 330941, funding contract no.\ 390090/11.11.2025, project co-financed by the European Regional Development Fund through the Smart Growth, Digitalisation and Financial Instruments Programme 2021--2027 (POCIDIF).
 	
 	
 	
