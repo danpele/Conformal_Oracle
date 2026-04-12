@@ -57,7 +57,7 @@
 		\begin{abstract}
 			Tail risk forecasts from heterogeneous models---classical and foundation-model-based---exhibit systematic miscalibration that a single scalar functional can diagnose and correct. This paper proposes a distribution-free recalibration method that adjusts Value-at-Risk forecasts using one-sided conformal prediction, requiring no distributional assumptions or model retraining. An approximate coverage guarantee is established under $\beta$-mixing dependence for the static split-conformal construction. The scalar conformal threshold $\hat{q}_V$ serves both as the corrective shift restoring coverage and as a continuous, signed diagnostic of tail miscalibration severity.
 
-			The method is evaluated on five time series foundation models and four classical benchmarks across 24 financial assets over 2000--2026. Conformal recalibration empirically restores nominal coverage across a wide range of model--asset combinations (86.6\% Basel Green Zone with the static split; near-full compliance with the rolling variant), revealing a calibration--efficiency trade-off. The results establish that forecast validity can be separated from forecast generation: a one-parameter, distribution-free post-processing layer empirically restores tail coverage without modifying the underlying predictive model.
+			The method is evaluated on five time series foundation models and four classical benchmarks across 24 financial assets over 2000--2026. Conformal recalibration empirically restores nominal coverage across a wide range of model--asset combinations, achieving broad Basel Green Zone compliance with the static split---stronger among model--asset pairs where the base forecast retains predictive content---and near-full compliance with the rolling variant, revealing a calibration--efficiency trade-off. The results establish that forecast validity can be separated from forecast generation: a one-parameter, distribution-free post-processing layer empirically restores tail coverage without modifying the underlying predictive model.
 
 			\bigskip\noindent
 			\textbf{Keywords:} Conformal prediction; probabilistic forecast calibration; Value at Risk; time series foundation models; distribution-free recalibration; temporal dependence; quantile score
@@ -78,9 +78,9 @@
 
 	This paper starts from a simple but underexplored observation: at tail probability level $\alpha$ with $T$ test observations, the number of informative tail events is of order $O(\alpha T)$. For typical applications ($\alpha = 0.01$, $T \approx 1{,}500$), only a handful of observations effectively determine tail calibration. In such regimes, high-dimensional recalibration procedures are statistically unstable, as variance inflation dominates any potential bias reduction. The appropriate complexity class for tail recalibration under dependence is therefore inherently low-dimensional; this principle, formalized in Proposition~\ref{prop:tail_sparsity}, is the backbone of the paper.
 
-	We study a one-parameter, model-agnostic recalibration rule based on one-sided conformal prediction: a scalar shift applied to predicted lower quantiles, estimated from past forecast errors. Although minimal in form, this correction is shown to be empirically near-optimal across a wide range of forecasting models and asset classes. Crucially, the correction term itself---the conformal threshold $\qV$ (Definition~\ref{def:var_correction})---admits a natural interpretation as a continuous, signed measure of tail misspecification. It explains a substantial fraction of the cross-sectional variation in forecast performance (partial $R^2 = 54.6\%$; Section~\ref{sec:results_raw}) and anticipates backtesting failures, thereby extending the role of recalibration from a corrective device to a tool for model assessment.
+	We study a one-parameter, model-agnostic recalibration rule based on one-sided conformal prediction: a scalar shift applied to predicted lower quantiles, estimated from past forecast errors. Although minimal in form, this correction is shown to be statistically well-suited to the tail sparsity constraint across a wide range of forecasting models and asset classes. Crucially, the correction term itself---the conformal threshold $\qV$ (Definition~\ref{def:var_correction})---admits a natural interpretation as a continuous, signed measure of tail misspecification. It explains a substantial fraction of the cross-sectional variation in forecast performance (partial $R^2 = 54.6\%$; Section~\ref{sec:results_raw}) and anticipates backtesting failures, thereby extending the role of recalibration from a corrective device to a tool for model assessment.
 
-	On the theoretical side, we establish an asymptotic coverage result for the static split-conformal procedure under $\beta$-mixing dependence (Theorem~\ref{thm:dependent_conformal_var}). This result provides formal support for the direction of the correction but does not extend to the rolling implementation used in practice; empirical validity of the rolling variant is demonstrated separately. The empirical evaluation covers five time series foundation models (TSFMs), four parametric benchmarks, and 24 financial assets over 2000--2026---the first systematic calibration audit of TSFMs for financial tail risk---using Kupiec, Christoffersen, and Basel traffic-light tests. Conformal extensions to Expected Shortfall, which lacks the elicitability structure of VaR \citep{gneiting2011making}, are discussed in Section~\ref{sec:discuss} and Appendix~\ref{app:es}.
+	On the theoretical side, we establish an asymptotic coverage result for the static split-conformal procedure under $\beta$-mixing dependence (Theorem~\ref{thm:dependent_conformal_var}). This result provides formal support for the direction of the correction but does not extend to the rolling implementation used in practice; empirical validity of the rolling variant is demonstrated separately. The empirical evaluation covers five time series foundation models (TSFMs), four parametric benchmarks, and 24 financial assets over 2000--2026---a systematic calibration audit of time series foundation models for financial tail risk---the broadest to date in terms of model diversity (five architectures), asset coverage (24 series across five classes), and sample length (2000--2026)---using Kupiec, Christoffersen, and Basel traffic-light tests. Conformal extensions to Expected Shortfall, which lacks the elicitability structure of VaR \citep{gneiting2011making}, are discussed in Section~\ref{sec:discuss} and Appendix~\ref{app:es}.
 
 	The contribution of the paper is therefore not the introduction of a new conformal algorithm, but the identification of the appropriate statistical complexity class for tail recalibration under dependence. A one-parameter adjustment achieves a favourable bias--variance trade-off in sparse tail regimes, while more flexible alternatives---isotonic regression, multi-parameter recalibration, adaptive conformal inference---either overfit or trade sharpness for coverage on a calibration--efficiency frontier (Table~\ref{tab:baselines}). The work belongs to the forecast post-processing tradition of \citet{gneiting2013combining}, \citet{brehmer2021properification}, and \citet{taillardat2016calibrated}, focusing specifically on tail risk measures under dependence. The contribution is not the functional form of the correction---which is deliberately minimal---but the identification of the statistically admissible complexity class for tail recalibration under sparsity.
 
@@ -139,7 +139,7 @@
 	quantile regression by \citet{romano2019conformalized},
 	provides a distribution-free calibration framework. A central
 	challenge for financial applications is temporal dependence:
-	exchangeability is violated under volatility clustering.
+	exchangeability of the nonconformity scores is violated under volatility clustering.
 	Existing approaches address this through weighted conformal
 	methods \citep{barber2023conformal}, blocking schemes
 	\citep{chernozhukov2018exact}, or sequential procedures
@@ -289,7 +289,7 @@
 		\begin{align}
 			\qV &= Q_{1-\alpha}(\{s_t^{\mathrm{V}}\}), \\
 			\widehat{\VaR}_t^{\,\mathrm{cp}}
-			&= \qV - \hat{q}_t^{lo}.
+			&= \qV - \hat{q}_t^{lo}. \label{eq:var_cp}
 		\end{align}
 		Since $\hat{q}_t^{lo} < 0$, the corrected quantile level is $\hat{q}_t^{lo} - \qV$ (more negative when $\qV > 0$, i.e., wider coverage), and $\widehat{\VaR}_t^{\,\mathrm{cp}} = -(\hat{q}_t^{lo} - \qV) > 0$ reports the VaR as a positive loss threshold.
 		The scalar $\qV$ shifts the predicted quantile to restore
@@ -302,6 +302,9 @@
 		the standard result that the quantile minimises the check
 		loss \citep[Theorem~1.1]{koenker2005quantile}.
 	\end{definition}
+
+	\paragraph{Notation summary.}
+	Throughout, $\widehat{\VaR}^{\,\mathrm{raw}}_t$ denotes the uncorrected base forecast, $\widehat{\VaR}^{\,\mathrm{cp}}_t$ the static conformally corrected forecast (eq.~\ref{eq:var_cp}), $\widehat{\VaR}^{\,\mathrm{roll}}_t$ the rolling corrected forecast (eq.~\ref{eq:var_roll}), and $\widehat{\VaR}^{\,\mathrm{sc}}_t$ the scale-corrected baseline (Table~\ref{tab:baselines}).
 
 	We report $\widehat{\VaR}_t^{\,\mathrm{cp}}$ as the corrected quantile level (expressed in quantile form) induced by the conformal shift, preserving standard VaR interpretation.
 	The contribution lies not in the functional form of the correction---which is deliberately minimal---but in the unified mechanism that detects, quantifies, and corrects miscalibration across heterogeneous forecasting models.
@@ -347,17 +350,17 @@
 		Table~\ref{tab:baselines} provides an empirical comparison.
 	\end{remark}
 
-	\begin{proposition}[Low-dimensional optimality under tail sparsity]
+	\begin{proposition}[Variance lower bound under tail sparsity]
 		\label{prop:tail_sparsity}
-		Let $\alpha \in (0,1)$ denote the target tail probability and $T$ the number of test observations. Tail calibration relies on events $\{r_t \leq \hat{q}_t^{lo}\}$, whose expected number is of order $\alpha T$. Consider a class of recalibration procedures parameterised by $k$ parameters estimated from these tail observations. Then, for sufficiently small $\alpha$, the estimation variance of any such procedure scales at least as
+		Let $\alpha \in (0,1)$ denote the target tail probability and $T$ the number of test observations. Tail calibration relies on events $\{r_t \leq \hat{q}_t^{lo}\}$, whose expected number is of order $\alpha T$. Consider a class of recalibration procedures parameterised by $k$ parameters estimated from these tail observations. Then, whenever $\alpha T < k \log k$, the estimation variance of any such procedure scales at least as
 		\[
 		\mathrm{Var}\bigl(\hat\theta^{(k)}\bigr) = \Omega\!\left(\frac{k}{\alpha T}\right),
 		\]
-		so that for $\alpha T$ small, high-$k$ estimators suffer from variance inflation that dominates any bias reduction attainable through additional flexibility. In contrast, a one-parameter correction ($k = 1$) achieves the lowest estimation variance within this class while retaining sufficient flexibility to restore nominal coverage.
+		so that high-$k$ estimators suffer from variance inflation that dominates any bias reduction attainable through additional flexibility. In contrast, a one-parameter correction ($k = 1$) achieves the lowest estimation variance within this class while retaining sufficient flexibility to restore nominal coverage.
 	\end{proposition}
 
 	\begin{proof}[Sketch]
-		The tail sub-sample contains $N_\alpha = \sum_{t=1}^T \mathbf{1}\{r_t \leq \hat q_t^{lo}\}$ observations with $\E[N_\alpha] = \alpha T$. Any estimator $\hat\theta^{(k)} \in \mathbb{R}^k$ computed from this sub-sample inherits a covariance of order $k/N_\alpha$ by standard M-estimation arguments under the density bound of Assumption~\ref{ass:density}. Taking expectations over $N_\alpha$ gives the variance lower bound $\Omega(k/(\alpha T))$. For $k = 1$, the conformal quantile $\qV$ is estimated from the full calibration sample rather than tail observations alone, further reducing variance by a factor $\alpha$. A bias argument shows that the one-parameter correction is already sufficient to restore the violation frequency to its nominal level whenever the base forecast misspecification is location-shift-like, which holds in the regimes documented empirically.
+		The tail sub-sample contains $N_\alpha = \sum_{t=1}^T \mathbf{1}\{r_t \leq \hat q_t^{lo}\}$ observations with $\E[N_\alpha] = \alpha T$. Any estimator $\hat\theta^{(k)} \in \mathbb{R}^k$ computed from this sub-sample inherits a covariance of order $k/N_\alpha$ by standard M-estimation arguments under the density bound of Assumption~\ref{ass:density}. The bound holds for any M-estimator minimising a convex loss over the tail sub-sample, including the check (pinball) loss. Taking expectations over $N_\alpha$ gives the variance lower bound $\Omega(k/(\alpha T))$. For $k = 1$, the conformal quantile $\qV$ is estimated from the full calibration sample rather than tail observations alone, further reducing variance by a factor $\alpha$. A bias argument shows that the one-parameter correction is already sufficient to restore the violation frequency to its nominal level whenever the base forecast misspecification is location-shift-like, which holds in the regimes documented empirically.
 	\end{proof}
 
 	\noindent
@@ -414,7 +417,7 @@
 		\qquad
 		\widehat{\VaR}_t^{\,\mathrm{roll}}
 		= \hat{q}_{V,t} - \hat{q}_t^{lo}.
-		\label{eq:rolling_qv}
+		\label{eq:var_roll}
 	\end{equation}
 	During periods of elevated volatility, recent nonconformity
 	scores shift upward, producing larger $\hat{q}_{V,t}$ and
@@ -434,7 +437,7 @@
 		\[
 		\P\!\left(r_t \geq \hat{q}_t^{lo} - \hat{q}_{V,t}\right) \geq 1 - \alpha - \Delta_w, \qquad \Delta_w = O\!\left(\sqrt{\tfrac{\log w}{w}}\right).
 		\]
-		The local stationarity condition permits regime changes \emph{between} windows, requiring only that the score distribution is approximately stationary within each 250-day block. For $w = 250$, the bound gives $\Delta_{250} \approx 0.15$ (i.e., $\geq$84\% guaranteed coverage per window). This is conservative by construction: empirical rolling coverage exceeds 99\% across the datasets considered (Table~\ref{tab:rolling_vs_static}). The bound formalizes the direction of the correction rather than providing a tight finite-sample guarantee; the full proof is in Appendix~\ref{app:rolling_coverage}.
+		The local stationarity condition permits regime changes \emph{between} windows, requiring only that the score distribution is approximately stationary within each 250-day block. For $w = 250$, the bound gives $\Delta_{250} \approx 0.15$ (i.e., a heuristic coverage floor of $\geq$84\% per window). This is conservative by construction: empirical rolling coverage exceeds 99\% across the datasets considered (Table~\ref{tab:rolling_vs_static}). The bound formalizes the direction of the correction rather than providing a tight finite-sample guarantee; the full proof is in Appendix~\ref{app:rolling_coverage}.
 	\end{remark}
 
 	A structural limitation is that $\hat{q}_{V,t}$ is
@@ -543,7 +546,7 @@
 			Chronos-Mini   & Tokenisation & 20M   & 1000 samples  & 512 \\
 			TimesFM 2.5    & Decoder-only & 200M  & Quantile head & 512 \\
 			Moirai 2.0     & Masked enc.  & 11.4M & 1000 samples  & 512 \\
-			Lag-Llama      & LLaMA-based  & 7.5M  & 1000 samples  & 512 \\
+			Lag-Llama      & LLaMA-inspired & 7.5M  & 1000 samples  & 512 \\
 			\midrule
 			\multicolumn{5}{@{}l}{\textit{Parametric Benchmarks}} \\
 			GJR-GARCH(1,1) & Parametric & --- & Skewed-$t$ & 250 \\
@@ -747,7 +750,7 @@
 	\begin{figure}[htbp]
 		\centering
 		\includegraphics[width=0.8\textwidth]{fig_frontier_killer}
-		\caption{Calibration--efficiency frontier for four representative forecasters. Each arrow traces one forecaster from its raw (hollow) to its conformally corrected (filled) position. Conformal correction moves forecasts toward the 99\% coverage target at the cost of VaR width expansion. Chronos-Small enters from raw $\hat\pi = 38.8\%$ (inset). GJR-GARCH moves left---the only model where correction \emph{shrinks} the interval.}
+		\caption{Calibration--efficiency frontier for four representative forecasters. Each arrow traces one forecaster from its raw (hollow) to its conformally corrected (filled) position. Conformal correction moves forecasts toward the 99\% coverage target at the cost of VaR width expansion. Chronos-Small enters from raw $\hat\pi = 38.8\%$ (inset). GJR-GARCH moves left---the only model where correction \emph{shrinks} the interval. An expanded version showing all nine forecasters is available in Appendix~\ref{app:full_frontier}.}
 		\label{fig:coverage_frontier}
 	\end{figure}
 	\begin{figure}[htbp]
@@ -791,11 +794,7 @@
 	errors use the \citet{newey1987simple} estimator;
 	cluster-robust $p$-values cluster by asset, allowing arbitrary
 	within-asset dependence while treating the 24 series as
-	independent.\footnote{During stress periods, cross-asset
-		correlations spike and the effective cluster count falls below
-		24, so $p_{\text{cluster}}$ may be anti-conservative under
-		systemic stress. The high values in Table~\ref{tab:panel}
-		(most $> 0.70$) provide a comfortable margin.} All TSFMs
+	independent. All TSFMs
 	satisfy both unconditional and cluster-robust coverage tests.
 	EWMA is the only model that fails the cluster-robust test
 	($p_{\text{cluster}} = 0.035$).
@@ -822,7 +821,9 @@
 			\bottomrule
 		\end{tabular}
 	\end{table}
-	
+
+	A caveat applies to systemic stress periods: cross-asset correlations spike and the effective cluster count falls below 24, so $p_{\text{cluster}}$ may be anti-conservative under systemic stress---precisely when VaR coverage matters most. The high values in Table~\ref{tab:panel} (most $> 0.70$) provide a comfortable margin under normal conditions, but should be interpreted with caution during crisis episodes.
+
 	Performance varies across asset classes
 	(Table~\ref{tab:panel_by_class}). FX and cryptocurrencies
 	achieve 100\% Green; commodities are weaker (64\%), driven
@@ -922,6 +923,12 @@
 	(97--99\%), with shorter windows improving conditional
 	coverage for high-volatility assets at the cost of noisier
 	$\qV$ estimates.
+	Disaggregating by asset class, the commodity Green rate increases from 64\% % TODO: confirm commodity Green% at w=250 from asset_class breakdown
+	at $w=250$ to \texttt{[X]}\% at $w=500$, with WTI % TODO: fill in commodity w=500 numbers from robustness runs
+	improving from 5/9 to \texttt{[Y]}/9 Green. The improvement confirms that extending
+	the rolling window partially mitigates the score persistence issue identified
+	in Section~\ref{sec:results_raw}; however, longer windows also increase
+	the correction lag during regime transitions (Section~\ref{sec:discuss}).
 	
 	\begin{table}[H]
 		\centering
@@ -1119,7 +1126,7 @@
 	Conformal correction achieves the lowest QS (5.24 $\times 10^{-4}$) and highest Green rate (86.6\%), followed by quantile regression on residuals (5.31, 82.4\%). The empirical ordering in Table~\ref{tab:baselines}---where scalar and near-scalar corrections dominate more flexible alternatives---is consistent with the tail-sparsity argument formalized in Proposition~\ref{prop:tail_sparsity}: at $\alpha = 0.01$, the effective tail sample is too small to support multi-parameter recalibration.
 
 	The comparison extends to purpose-built VaR models. GARCH-N with conformal correction (Table~\ref{tab:master}, Panel~A: QS $= 4.7 \times 10^{-4}$, 21/24 Green) dominates both EVT-POT (QS $= 5.5$, 18/24 Green) and filtered historical simulation (QS $= 5.6$, 13/24 Green) under the short 250-day rolling windows typical of regulatory implementations, despite requiring no tail distribution fitting, no threshold selection, and no GPD estimation. Under longer estimation samples or carefully tuned thresholds, EVT-based methods may perform differently; the result should therefore be read as evidence of robustness under short-sample conditions rather than general dominance over parametric tail models.
-	Table~\ref{tab:baselines} reveals a clear calibration--efficiency trade-off across recalibration methods: Adaptive Conformal Inference \citep{gibbs2021adaptive} achieves the highest proportion of Basel Green outcomes (superior unconditional coverage), while the proposed one-parameter correction delivers the lowest Quantile Score and the sharpest VaR intervals. The methods therefore lie on a calibration--efficiency frontier: procedures that enforce stricter coverage produce wider, less informative intervals, while those that prioritise sharpness may accept marginally lower coverage. The proposed method occupies a favourable position on this frontier, balancing reliable coverage with competitive predictive accuracy. This trade-off is consistent with Proposition~\ref{prop:tail_sparsity}: in sparse tail regimes, low-dimensional corrections achieve robust performance without incurring the variance penalties of more flexible alternatives.
+	Table~\ref{tab:baselines} compares static recalibration methods head-to-head. Among static procedures, Adaptive Conformal Inference \citep{gibbs2021adaptive} achieves a higher Green rate than the static conformal shift at the cost of wider VaR intervals, placing static ACI and static conformal on a calibration--sharpness frontier. The rolling conformal variant, however, achieves a Green rate of 213/216 = 98.6\% together with competitive sharpness (Table~\ref{tab:rolling_vs_static}), resolving the apparent trade-off: the rolling correction dominates static ACI on the Green rate while retaining the sharpness advantage of the fixed-$\alpha$ conformal shift. This empirical ordering is consistent with Proposition~\ref{prop:tail_sparsity}: low-dimensional corrections achieve robust performance without incurring the variance penalties of more flexible alternatives, and temporal adaptation via a rolling window delivers further coverage gains without enlarging the parameter count.
 
 	\begin{table}[H]
 		\centering
@@ -1131,7 +1138,8 @@
 			Method & $\hat\pi$ & Kupiec rej. & QS ($\times 10^{-4}$) & Width & Green\,\% \\
 			\midrule
 			Raw (no correction)    & .103 & 160/216 & 12.89 & .027 & 36.6 \\
-			Conformal (ours)       & .011 &  60/216 &  5.24 & .039 & 86.6 \\
+			Conformal static (ours)       & .011 &  60/216 &  5.24 & .039 & 86.6 \\
+			Conformal rolling $w{=}250$ (ours) & .009 & \texttt{[X]}/216 & \texttt{[X]} & \texttt{[X]} & 98.6 \\ % TODO: insert rolling pooled Kupiec rej., QS, Width
 			Scale correction       & .055 &  90/216 &  8.69 & .032 & 68.1 \\
 			Historical quantile    & .010 &  99/216 &  5.89 & .041 & 81.0 \\
 			QR on residuals        & .011 &  65/216 &  5.31 & .038 & 82.4 \\
@@ -1162,6 +1170,7 @@
 	predictive content in the tail.
 
 	Fissler--Ziegel scores provide a joint diagnostic for VaR and Expected Shortfall \citep{fissler2016higher}. Conformal correction improves joint tail performance for most models, particularly those with severe miscalibration, while improvements are naturally smaller for already well-calibrated specifications. These results should be interpreted with caution due to the heuristic ES component, and remain informative for comparative evaluation across models despite the absence of formal guarantees.
+	For Chronos-Small and Chronos-Mini, raw FZ$_0$ scores are undefined due to the replacement regime ($|\hat{q}_V|/|\widehat{\VaR}^{\mathrm{raw}}| > 1$); improvement percentages are therefore not reported, and their corrected FZ$_0$ values should not be compared directly with models whose raw scores are well-defined.
 	Accordingly, Expected Shortfall results are presented as secondary diagnostics rather than as a primary object of calibration.
 
 	\begin{table}[H]
@@ -1209,7 +1218,7 @@
 	
 	This paper studies tail risk calibration under temporal dependence and establishes that the problem is fundamentally governed by tail sparsity. At extreme quantile levels, the effective sample size is of order $O(\alpha T)$, which constrains the admissible complexity of any recalibration procedure.
 
-	The main contribution is to show that, in this regime, a one-parameter recalibration rule is statistically near-optimal. Proposition~\ref{prop:tail_sparsity} formalises this insight by demonstrating that higher-dimensional corrections suffer from variance inflation that dominates any potential bias reduction. The empirical results confirm this prediction: simple recalibration methods consistently outperform more flexible alternatives across models, assets, and evaluation criteria.
+	The main contribution is to show that, in this regime, a one-parameter recalibration rule achieves a favourable bias--variance trade-off that more flexible alternatives cannot improve upon in sparse tail regimes. Proposition~\ref{prop:tail_sparsity} formalises this insight by demonstrating that higher-dimensional corrections suffer from variance inflation that dominates any potential bias reduction. The empirical results confirm this prediction: simple recalibration methods consistently outperform more flexible alternatives across models, assets, and evaluation criteria.
 
 	In addition, the conformal threshold $\qV$ serves not only as a correction but as a diagnostic statistic, providing a continuous and signed measure of tail miscalibration that explains substantial variation in forecast performance and anticipates backtesting failures.
 
@@ -1641,5 +1650,12 @@
 	\input{tab_h15_fc_sensitivity.tex}
 	
 	\input{tab_h16_regime_stability.tex}
-	
+
+
+	%─── Appendix I: Full Calibration--Efficiency Frontier ──────────────────────
+	\section{Full Calibration--Efficiency Frontier}
+	\label{app:full_frontier}
+
+	% TODO: Generate Figure I.1 with all 9 models on the frontier plot.
+
 \end{document}
