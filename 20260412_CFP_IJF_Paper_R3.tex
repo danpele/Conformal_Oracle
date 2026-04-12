@@ -1025,12 +1025,7 @@
 	(97--99\%), with shorter windows improving conditional
 	coverage for high-volatility assets at the cost of noisier
 	$\qV$ estimates.
-	Disaggregating by asset class, the commodity Green rate increases from 64\% % TODO: confirm commodity Green% at w=250 from asset_class breakdown
-	at $w=250$ to \texttt{[X]}\% at $w=500$, with WTI % TODO: fill in commodity w=500 numbers from robustness runs
-	improving from 5/9 to \texttt{[Y]}/9 Green. The improvement confirms that extending
-	the rolling window partially mitigates the score persistence issue identified
-	in Section~\ref{sec:results_raw}; however, longer windows also increase
-	the correction lag during regime transitions (Section~\ref{sec:discuss}).
+	Disaggregating by asset class, commodities achieve 36/36 Green under rolling $w=250$ (100\%), already resolving the weakness observed under the static split (64\% Green in Table~\ref{tab:panel_by_class}). Extending the window to $w=500$ reduces commodity Green to 29/36 (81\%), driven by DJCI (4/9) and GOLD (7/9); WTI and NATGAS remain at 9/9. This mild degradation is consistent with the longer correction lag during regime transitions discussed in Section~\ref{sec:discuss}: at $w=500$, the trailing window absorbs more low-volatility history, blunting the response to inventory-driven jumps in commodity markets.
 	
 	\begin{table}[H]
 		\centering
@@ -1268,7 +1263,7 @@
 			\midrule
 			Raw (no correction)    & .103 & 160/216 & 12.89 & .027 & 36.6 \\
 			Conformal static (ours)       & .011 &  60/216 &  5.24 & .039 & 86.6 \\
-			Conformal rolling $w{=}250$ (ours) & .009 & \texttt{[X]}/216 & \texttt{[X]} & \texttt{[X]} & 98.6 \\ % TODO: insert rolling pooled Kupiec rej., QS, Width
+			Conformal rolling $w{=}250$ (ours) & .009 &  3/216 &  5.44 & .043 & 98.6 \\
 			Scale correction       & .055 &  90/216 &  8.69 & .032 & 68.1 \\
 			Historical quantile    & .010 &  99/216 &  5.89 & .041 & 81.0 \\
 			QR on residuals        & .011 &  65/216 &  5.31 & .038 & 82.4 \\
@@ -1788,6 +1783,13 @@
 	\section{Full Calibration--Efficiency Frontier}
 	\label{app:full_frontier}
 
-	% TODO: Generate Figure I.1 with all 9 models on the frontier plot.
+	Figure~\ref{fig:frontier_all9} shows the raw-to-corrected movement for all nine forecasters on the calibration--efficiency plane at $\alpha = 0.01$. Hollow markers denote raw positions; filled markers denote conformally corrected positions. The dashed line marks the 99\% coverage target. The two Chronos models enter the plot with raw coverage near 60\% (replacement regime), while the remaining forecasters begin with moderate miscalibration and converge to the 99\% target after correction.
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{frontier_all9.pdf}
+		\caption{Calibration--efficiency frontier for all nine forecasters at $\alpha = 0.01$. Each arrow traces one forecaster from its raw (hollow) to its conformally corrected (filled) position. Chronos-Small and Chronos-Mini enter from raw coverage ${\approx}60\%$ (replacement regime, shown clipped at 0.55 for display).}
+		\label{fig:frontier_all9}
+	\end{figure}
 
 \end{document}
