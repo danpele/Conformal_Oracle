@@ -354,7 +354,12 @@
 		scale of recent errors. The scale correction baseline in
 		Table~\ref{tab:baselines} provides an empirical comparison.
 	\end{remark}
-	
+
+	\begin{remark}[Low-parameter optimality under tail sparsity]
+		\label{rem:tail_sparsity}
+		At significance level $\alpha$ with $T$ test observations, the expected number of tail violations is $\alpha T$. Any recalibration method with $k$ free parameters estimated from tail observations faces an effective sample size of $O(\alpha T)$, so the estimation variance of each parameter scales as $O(k / (\alpha T))$. For $\alpha = 0.01$ and $T = 1{,}500$ (a typical asset in our sample), the effective tail sample is ${\sim}15$ observations. In this regime, a one-parameter correction ($k = 1$) minimises estimation variance while retaining sufficient flexibility to restore coverage. Multi-parameter alternatives (e.g., isotonic regression, scale correction with state-dependent scaling) must partition these ${\sim}15$ tail events across additional degrees of freedom, leading to variance inflation that empirically offsets any bias reduction (Table~\ref{tab:baselines}). This bias--variance trade-off is the statistical rationale for the deliberately minimal design of the conformal shift.
+	\end{remark}
+
 	\subsection{Validity under Temporal Dependence}
 	\label{sec:validity}
 	
@@ -421,7 +426,16 @@
 	improved conditional coverage across the datasets considered.
 
 	Unlike historical simulation, which directly estimates quantiles of raw returns, the rolling conformal correction operates on forecast errors relative to a base model. It therefore preserves model-specific predictive structure when the conformal adjustment is small, and defaults to an empirical quantile when the underlying model is severely misspecified.
-	In practice, the rolling variant constitutes the operational implementation of the framework, while the static construction provides theoretical anchoring. A local coverage result for the rolling variant, applying Theorem~\ref{thm:dependent_conformal_var} window-by-window under local stationarity, is given in Appendix~\ref{app:rolling_coverage}.
+	In practice, the rolling variant constitutes the operational implementation of the framework, while the static construction provides theoretical anchoring.
+
+	\begin{remark}[Local coverage of the rolling variant]
+		\label{rem:rolling_coverage}
+		If within each rolling window $[t-w,\, t-1]$ the score process satisfies Assumption~\ref{ass:main} locally, then Theorem~\ref{thm:dependent_conformal_var} applies window-by-window with $n = w$, yielding
+		\[
+		\P\!\left(r_t \geq \hat{q}_t^{lo} - \hat{q}_{V,t}\right) \geq 1 - \alpha - \Delta_w, \qquad \Delta_w = O\!\left(\sqrt{\tfrac{\log w}{w}}\right).
+		\]
+		The local stationarity condition permits regime changes \emph{between} windows, requiring only that the score distribution is approximately stationary within each 250-day block. For $w = 250$, the bound gives $\Delta_{250} \approx 0.15$ (i.e., $\geq$84\% guaranteed coverage per window). This is conservative by construction: empirical rolling coverage exceeds 99\% across the datasets considered (Table~\ref{tab:rolling_vs_static}). The bound formalizes the direction of the correction rather than providing a tight finite-sample guarantee; the full proof is in Appendix~\ref{app:rolling_coverage}.
+	\end{remark}
 
 	A structural limitation is that $\hat{q}_{V,t}$ is
 	backward-looking: at the onset of a stress episode, the trailing
@@ -1104,7 +1118,7 @@
 	violation indicators on $\hat{q}_t^{lo}$, which fails to
 	produce a scalar VaR for most pairs (hence missing entries); and
 	(v)~\emph{Adaptive Conformal Inference} (ACI) \citep{gibbs2021adaptive}, which dynamically updates the target coverage level based on past violations.
-	Conformal correction achieves the lowest QS (5.24 $\times 10^{-4}$) and highest Green rate (86.6\%), followed by quantile regression on residuals (5.31, 82.4\%). More flexible approaches perform strictly worse, reflecting a fundamental sample-size constraint: at $\alpha = 0.01$ with approximately 1{,}500 test observations per asset, the expected number of tail violations is ${\sim}15$, so any method with $k$ free parameters must estimate its additional degrees of freedom from $O(\alpha T)$ effective tail observations, leading to high variance that offsets any bias reduction. The single-parameter conformal shift and quantile regression on residuals---which reduces to a near-scalar correction at extreme quantiles---cluster at the top, consistent with the one-parameter rule being empirically near-optimal among low-parameter corrections in finite samples at extreme quantiles.
+	Conformal correction achieves the lowest QS (5.24 $\times 10^{-4}$) and highest Green rate (86.6\%), followed by quantile regression on residuals (5.31, 82.4\%). The empirical ordering in Table~\ref{tab:baselines}---where scalar and near-scalar corrections dominate more flexible alternatives---is consistent with the tail-sparsity argument formalized in Remark~\ref{rem:tail_sparsity}: at $\alpha = 0.01$, the effective tail sample is too small to support multi-parameter recalibration.
 
 	The comparison extends to purpose-built VaR models. GARCH-N with conformal correction (Table~\ref{tab:master}, Panel~A: QS $= 4.7 \times 10^{-4}$, 21/24 Green) dominates both EVT-POT (QS $= 5.5$, 18/24 Green) and filtered historical simulation (QS $= 5.6$, 13/24 Green) under the short 250-day rolling windows typical of regulatory implementations, despite requiring no tail distribution fitting, no threshold selection, and no GPD estimation. Under longer estimation samples or carefully tuned thresholds, EVT-based methods may perform differently; the result should therefore be read as evidence of robustness under short-sample conditions rather than general dominance over parametric tail models.
 	Adaptive Conformal Inference \citep{gibbs2021adaptive} achieves a higher Green rate than the proposed method, while the proposed method achieves a lower Quantile Score and narrower VaR intervals (Table~\ref{tab:baselines}). This reflects a genuine calibration--sharpness trade-off: ACI's dynamic $\alpha_t$ adjustment prioritises coverage at the cost of wider bands, whereas the fixed-$\alpha$ conformal shift prioritises efficiency. Neither approach dominates; the choice depends on whether the practitioner values tighter capital reserves or more robust coverage. The two methods lie on a calibration--efficiency frontier rather than a dominance ordering.
