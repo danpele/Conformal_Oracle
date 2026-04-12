@@ -56,24 +56,20 @@
 		%─── PART 2: Abstract ───────────────────────────────────────────────────────
 		\begin{abstract}
 			Tail risk forecasts from heterogeneous models---classical and
-			foundation-model-based---exhibit systematic miscalibration that a
-			single scalar functional can diagnose and correct. This paper
+			foundation-model-based---exhibit systematic miscalibration that can be diagnosed and corrected using a simple scalar functional. This paper
 			proposes a distribution-free post-processing framework that
 			recalibrates Value-at-Risk forecasts using one-sided conformal
 			prediction, requiring no distributional assumptions or model
-			retraining. An approximate coverage guarantee is established under
-			$\beta$-mixing dependence. The scalar conformal threshold
-			$\hat{q}_V$ serves both as the corrective shift restoring coverage
+			retraining. An approximate asymptotic coverage result is established for the static split-conformal construction under
+			$\beta$-mixing dependence, providing asymptotic support for calibration under weak dependence, without implying finite-sample guarantees. The scalar conformal threshold
+			$\hat{q}_V$ serves both as the corrective shift restoring empirical coverage
 			and as a continuous, signed diagnostic of tail miscalibration
 			severity.
 			
 			The framework is evaluated on five time series foundation models
 			and four classical benchmarks across 24 financial assets over
-			2000--2026. Conformal recalibration restores nominal coverage
-			across the large majority of model--asset combinations (86.6\%
-			Basel Green Zone, zero Red), revealing a clear
-			calibration--efficiency trade-off. A rolling variant adapts to
-			local market conditions, further improving conditional coverage.
+			2000--2026. Conformal recalibration restores nominal coverage in finite samples across a wide range of models and assets, subject to estimation error and dependence effects, achieving high levels of Basel Green Zone compliance with the rolling implementation approaching full compliance in the evaluated sample, revealing an empirical calibration--efficiency trade-off.
+			The results provide strong empirical evidence that forecast validity can be treated as separable from forecast generation: a simple, distribution-free post-processing layer can empirically restore tail coverage without modifying the underlying predictive model.
 			
 			\bigskip\noindent
 			\textbf{Keywords:} Conformal prediction; probabilistic forecast calibration; Value at Risk; time series foundation models; distribution-free recalibration; temporal dependence; quantile score
@@ -104,19 +100,17 @@
 	\citep{christoffersen1998, nolde2017elicitability,
 		goel2024tsfmvar, pele2025llmvar}.
 	
-	This paper addresses a fundamental forecasting problem: how to
-	transform arbitrary probabilistic forecasts into valid risk
-	forecasts without modifying the underlying model. We propose a
+	This paper addresses a central problem in probabilistic forecasting: how to transform arbitrary predictive distributions into calibrated forecasts under temporal dependence. We adopt a post-processing perspective, treating calibration as a distinct layer applied to arbitrary forecast outputs. This separation is particularly relevant in financial risk management, where regulatory evaluation depends on coverage rather than predictive accuracy.
+	More broadly, this perspective aligns with the forecast calibration literature, where the objective is not to improve predictive models per se, but to ensure that their probabilistic outputs satisfy statistical validity criteria. We propose a
 	one-sided conformal correction that operates as a model-agnostic
 	post-processing layer---requiring neither retraining nor
-	distributional assumptions---and targets calibration rather than
-	predictive accuracy. In this sense, it belongs to the forecast
+	distributional assumptions---and targets calibration as a distinct layer from predictive accuracy, in line with the forecast post-processing paradigm. In this sense, it belongs to the forecast
 	post-processing tradition of \citet{gneiting2013combining},
 	\citet{brehmer2021properification}, and
 	\citet{taillardat2016calibrated}, while focusing specifically
 	on tail risk measures under dependence.
 	
-	The contribution is threefold. First, we introduce the one-sided
+	The contribution rests on a specific claim: under sparse tail data and temporal dependence, a one-parameter post-processing rule is empirically close to the right complexity class for quantile recalibration, and its correction term has independent diagnostic value. First, we introduce the one-sided
 	conformal recalibration procedure and establish an approximate
 	coverage result under $\beta$-mixing conditions, providing
 	asymptotic support without relying on i.i.d.\ assumptions.
@@ -129,8 +123,11 @@
 	signed miscalibration diagnostic with substantial explanatory power for cross-sectional variation in forecast quality---and document the main limitations, including
 	sensitivity to calibration window size, persistence, and
 	structural breaks.
+	This reframes conformal correction not only as a calibration tool, but as a diagnostic lens for model misspecification.
 
-	While regulatory frameworks have increasingly shifted toward Expected Shortfall, VaR remains the standard directly backtestable quantile risk measure; conformal extensions to ES are discussed in Section~\ref{sec:discuss} and Appendix~\ref{app:es}.
+	While regulatory frameworks have increasingly shifted toward Expected Shortfall, VaR remains the standard directly backtestable quantile risk measure; conformal extensions to ES are discussed in Section~\ref{sec:discuss} and Appendix~\ref{app:es}. Accordingly, Expected Shortfall evaluation is included as a complementary diagnostic rather than a primary calibration target.
+	The contribution of the paper is therefore not to improve the underlying predictive model, but to address a core forecasting problem: how to transform arbitrary probabilistic forecasts into statistically valid tail quantile forecasts under temporal dependence. In doing so, we separate forecast generation from forecast calibration, providing a model-agnostic correction that applies uniformly across heterogeneous forecasting systems. The static construction provides asymptotic support for coverage validity; the rolling variant is supported by empirical evidence across the datasets considered.
+	The contribution should be interpreted as a framework for forecast calibration rather than a method for improving predictive models. The objective is to restore statistical validity of forecast outputs, not to enhance the underlying predictive structure.
 
 	% Data and code availability: removed for blind review
 	
@@ -224,7 +221,9 @@
 	$\widehat{\VaR}_t^{\,\mathrm{cp}} = \qV - \hat{q}_t^{lo}$.
 	Finally, $\hat{q}_{V,t}^{\mathrm{roll}}$ denotes the
 	rolling-window version.
-	
+	Throughout the paper, we use $\alpha = 0.01$ interchangeably with a 1\% tail probability (99\% coverage level).
+	We use $\VaR_t$ generically when no ambiguity arises, and superscripts (raw, cp, roll) to distinguish variants where necessary. All VaR values are reported as positive loss thresholds; the corresponding quantile is $\hat{q}_t = -\VaR_t$.
+
 	\subsection{TSFM-VaR Setup}
 	\label{sec:setup}
 	
@@ -292,7 +291,8 @@
 	where $I_t = \1(r_t \leq -\widehat{\VaR}_t^\beta)$. These
 	diagnostics detect miscalibration but do not quantify its
 	magnitude or provide a correction mechanism.
-	
+	To complement backtesting diagnostics with a joint scoring perspective, we also consider evaluation of Value-at-Risk and Expected Shortfall using the Fissler--Ziegel (FZ) scoring framework \citep{fissler2016higher}, which is strictly consistent for the pair (VaR, ES). Given that the ES component in our framework is obtained via a heuristic correction (Appendix~\ref{app:es}), FZ scores are interpreted as diagnostic rather than as a formal validation criterion; empirical results are reported in Section~\ref{sec:forecast_eval} and Table~\ref{tab:fz_scores}.
+
 	\subsection{One-Sided Conformal VaR Correction}
 	\label{sec:cqr_var}
 	
@@ -336,8 +336,9 @@
 			\widehat{\VaR}_t^{\,\mathrm{cp}}
 			&= \qV - \hat{q}_t^{lo}.
 		\end{align}
+		Since $\hat{q}_t^{lo} < 0$, the corrected quantile level is $\hat{q}_t^{lo} - \qV$ (more negative when $\qV > 0$, i.e., wider coverage), and $\widehat{\VaR}_t^{\,\mathrm{cp}} = -(\hat{q}_t^{lo} - \qV) > 0$ reports the VaR as a positive loss threshold.
 		The scalar $\qV$ shifts the predicted quantile to restore
-		nominal coverage. Larger values indicate systematic
+		nominal coverage in the calibration sample; its role is not to introduce new predictive structure, but to correct systematic miscalibration in the existing forecast. Larger values indicate systematic
 		underestimation of risk, while negative values reflect
 		over-conservative forecasts. Among all constant
 		adjustments, $\qV$ minimises the pinball loss on the
@@ -346,7 +347,10 @@
 		the standard result that the quantile minimises the check
 		loss \citep[Theorem~1.1]{koenker2005quantile}.
 	\end{definition}
-	
+
+	We report $\widehat{\VaR}_t^{\,\mathrm{cp}}$ as the corrected quantile level (expressed in quantile form) induced by the conformal shift, preserving standard VaR interpretation.
+	The contribution lies not in the functional form of the correction---which is deliberately minimal---but in the unified mechanism that detects, quantifies, and corrects miscalibration across heterogeneous forecasting models.
+
 	The correction restores violation frequency but does not
 	modify the shape of the predictive distribution. This design
 	prioritises robustness over flexibility: a one-parameter
@@ -391,9 +395,8 @@
 	\subsection{Validity under Temporal Dependence}
 	\label{sec:validity}
 	
-	The following result establishes approximate coverage under
-	weak dependence, replacing the exchangeability assumption of
-	standard conformal prediction.
+	The following result establishes an approximate asymptotic coverage result for the static split-conformal construction under
+	weak dependence. This result provides asymptotic support for the calibration procedure, without implying finite-sample guarantees, and does not extend to the rolling implementation used in practice, for which no formal coverage guarantee is currently available.
 
 	\begin{assumption}\label{ass:main}
 		Let $S_t = \hat{q}^{lo}_t - r_t$ be strictly stationary and $\beta$-mixing.
@@ -416,9 +419,11 @@
 		under geometric $\beta$-mixing.
 	\end{theorem}
 	
+	The result applies only to the static calibration scheme. The rolling procedure introduced in Section~\ref{sec:rolling_method} is an empirical deployment strategy and does not inherit the same formal guarantee; it should therefore be interpreted as an empirically validated deployment strategy rather than a theoretically guaranteed procedure. Accordingly, all performance claims for the rolling variant should be interpreted as empirical rather than theoretical.
+	The result is not intended as a sharp finite-sample guarantee. In practical sample sizes, the bound is conservative and primarily serves as theoretical support for the direction of the correction rather than as an operational guarantee.
 	The approximation error $\Delta_n$ vanishes as the
-	calibration sample increases, ensuring asymptotic coverage.
-	
+	calibration sample increases, consistent with asymptotic coverage behavior.
+
 	\begin{corollary}
 		\label{cor:garch_conformal_var}
 		Under GARCH(1,1) dynamics with
@@ -449,45 +454,11 @@
 	contracts. The static split underpins the coverage result of
 	Theorem~\ref{thm:dependent_conformal_var}, while the rolling
 	variant is an empirical deployment strategy that does not
-	inherit the same formal guarantee but consistently delivers
-	improved conditional coverage.
+	inherit the same formal guarantee but empirically delivers
+	improved conditional coverage across the datasets considered.
 
-	Unlike historical simulation, which directly estimates quantiles of raw returns, the rolling conformal correction operates on forecast errors relative to a base model. It therefore preserves model-specific predictive structure when present and defaults to an empirical quantile only when the underlying model is severely misspecified.
-
-	\begin{proposition}[Local coverage of the rolling variant]
-		\label{prop:rolling_coverage}
-		Suppose that within each rolling window $[t-w,\, t-1]$, the
-		score process $\{S_\tau\}_{\tau=t-w}^{t-1}$ satisfies
-		Assumption~\ref{ass:main} locally with mixing coefficients
-		$\beta_w(k) \leq C_w \rho_w^k$. Then
-		\[
-		\P\!\left(r_t \geq \hat{q}_t^{lo} - \hat{q}_{V,t}\right)
-		\geq 1 - \alpha - \Delta_w,
-		\]
-		where $\Delta_w = O(\sqrt{\log w / w})$ and $w$ is the window
-		size.
-	\end{proposition}
-
-	\begin{proof}
-		Apply Theorem~\ref{thm:dependent_conformal_var} to the
-		sub-sample $\{S_\tau\}_{\tau=t-w}^{t-1}$ with $n = w$. The
-		local stationarity assumption ensures that
-		Assumption~\ref{ass:main} holds within each window, yielding
-		the same remainder bound with $n$ replaced by $w$. The result
-		follows window-by-window; no global stationarity is required.
-	\end{proof}
-
-	The local stationarity assumption is substantially weaker than
-	requiring global $\beta$-mixing over the full sample: it permits
-	regime changes \emph{between} windows provided that within each
-	250-day block the score process is approximately stationary.
-	For $w = 250$, the bound gives $\Delta_{250} \approx 0.15$,
-	guaranteeing $\geq$84\% coverage per window---conservative but
-	non-vacuous. The empirical rolling coverage of 99.1\%
-	(Table~\ref{tab:rolling_vs_static}) substantially exceeds this
-	floor, consistent with the conservativeness observed for the
-	static bound (Table~\ref{tab:delta_n}).
-	The bound is conservative by construction and is not intended as a tight finite-sample guarantee; its role is to formalize the direction of the correction under local dependence, confirming that the rolling procedure does not forfeit coverage validity.
+	Unlike historical simulation, which directly estimates quantiles of raw returns, the rolling conformal correction operates on forecast errors relative to a base model. It therefore preserves model-specific predictive structure when the conformal adjustment is small, and defaults to an empirical quantile when the underlying model is severely misspecified.
+	In practice, the rolling variant constitutes the operational implementation of the framework, while the static construction provides theoretical anchoring. A local coverage result for the rolling variant, applying Theorem~\ref{thm:dependent_conformal_var} window-by-window under local stationarity, is given in Appendix~\ref{app:rolling_coverage}.
 
 	A structural limitation is that $\hat{q}_{V,t}$ is
 	backward-looking: at the onset of a stress episode, the trailing
@@ -495,19 +466,8 @@
 	lags the true regime shift. For sudden, unprecedented
 	events (e.g., March 2020), the lag is unavoidable.
 
-	The rolling variant is related to Adaptive Conformal
-	Inference \citep{gibbs2021adaptive}, but ACI's regret
-	guarantee relies on symmetric miscoverage loss, which the
-	one-sided VaR score breaks. More concretely, exponential
-	weighting in the \citet{barber2023conformal} framework with
-	decay parameter $\lambda$ applied to the one-sided score
-	$s_t^V$ would yield a weighted quantile
-	$\hat{q}_{V,t}^{w}$ that formally satisfies their weighted
-	exchangeability guarantee (Theorem~2 of
-	\citealt{barber2023conformal}). Combining this with the
-	one-sided loss structure and deriving a one-sided regret
-	bound analogous to ACI is a concrete open problem.
-	
+	The rolling variant is related to Adaptive Conformal Inference \citep{gibbs2021adaptive}, which dynamically updates the target miscoverage level~$\alpha_t$ based on past violations. In contrast, our approach estimates a direct correction to the forecast via the nonconformity score. ACI's regret guarantee relies on symmetric miscoverage loss, which the one-sided VaR score breaks; in the tail setting, this induces a different bias--variance trade-off. More concretely, exponential weighting in the \citet{barber2023conformal} framework applied to the one-sided score~$s_t^V$ would yield a weighted quantile satisfying their exchangeability guarantee, but combining this with the one-sided loss structure and deriving a formal regret bound remains an open problem. ACI is included as an empirical benchmark in Table~\ref{tab:baselines}.
+
 	%══════════════════════════════════════════════════════════════════════════════
 	%─── PART 7: Data and Experimental Setup ────────────────────────────────────
 	%══════════════════════════════════════════════════════════════════════════════
@@ -656,9 +616,11 @@
 	Table~\ref{tab:master}). For TimesFM and the parametric
 	benchmarks, $|\qV| < 0.01$ remains small relative to the
 	forecast, indicating genuine predictive content in the tail.
-	
+	This distinction is central to the interpretation of the method and to its role as a diagnostic framework rather than a purely corrective procedure. When the conformal adjustment is small relative to the base forecast, the method acts as a recalibration layer that preserves predictive structure. When the adjustment dominates, the procedure reduces to a statistically valid empirical fallback, indicating the absence of usable predictive signal in the underlying model.
+	Accordingly, the framework should be interpreted as enforcing valid coverage rather than preserving or recovering predictive structure in severely misspecified models.
+
 	The conformal threshold $\qV$ provides a continuous, signed
-	ranking of tail reliability. The ranking spans an order of
+	measure of tail miscalibration, functioning as both a corrective parameter and a diagnostic statistic for forecast quality. The ranking spans an order of
 	magnitude, from $\qV = -0.007$ (GJR-GARCH) to $\qV = 0.039$
 	(Chronos-Mini). To assess whether $\qV$ provides information
 	beyond violation counts, we regress Quantile Score improvement
@@ -672,7 +634,8 @@
 	$\qV$ is 54.6\%, confirming that the conformal correction
 	captures variation in forecast quality not explained by
 	violation frequency alone.
-	
+	This diagnostic role is central: unlike violation counts, which are discrete and lagging, $\qV$ provides a continuous and forward-looking measure of calibration error across models and assets.
+
 	Figure~\ref{fig:rolling_qv} illustrates the time variation of
 	$\qV$ in a rolling window. The correction tracks volatility
 	regimes and signals miscalibration before the Kupiec test
@@ -722,11 +685,11 @@
 	\subsection{Conformal Recalibration Results}
 	\label{sec:recalib}
 	
-	Conformal recalibration transforms all forecasters into
-	effectively Basel-compliant risk models. Across 216 model--asset
+	Conformal recalibration transforms most forecasters into
+	Basel-compliant risk models in finite samples. Across 216 model--asset
 	pairs, 187 achieve Green status (86.6\%), 29 fall into Yellow,
 	and none enter Red (Table~\ref{tab:master}).
-	The Green rate is not mechanically guaranteed: the correction is estimated on a finite calibration set and evaluated entirely out-of-sample under temporal dependence. Coverage failures therefore remain possible and are observed. The rolling variant additionally improves conditional coverage as measured by Christoffersen tests (Table~\ref{tab:rolling_vs_static}), indicating that the method captures time-varying miscalibration rather than merely enforcing a fixed violation rate.
+	The Green rate is not mechanically guaranteed: the correction is estimated on a finite calibration set and evaluated entirely out-of-sample under temporal dependence. Coverage failures therefore remain possible and are observed. The rolling variant, which constitutes the operational implementation of the framework, additionally improves conditional coverage as measured by Christoffersen tests (Table~\ref{tab:rolling_vs_static}), indicating that the method captures time-varying miscalibration rather than merely enforcing a fixed violation rate.
 	This headline rate
 	is not inflated by the replacement regime: among the 168 pairs
 	where $|\hat{q}_V|/|\mathrm{VaR}_{\mathrm{raw}}| < 1$ (the
@@ -776,18 +739,18 @@
 	remaining differences reflect only local sharpness at
 	comparable VaR widths.
 	
-	To distinguish genuine recalibration from effective
-	replacement, we disaggregate by the $|\qV|/|\VaR_{\mathrm{raw}}|$
-	ratio. Among the 168 model--asset pairs where
+	Disaggregating by the $|\qV|/|\VaR_{\mathrm{raw}}|$
+	ratio, among the 168 model--asset pairs where
 	$|\qV|/|\VaR_{\mathrm{raw}}| < 1$ (the base model retains
 	meaningful predictive content), 149 (88.7\%) achieve Green Zone
 	status with mean corrected $\hat\pi = 0.011$ and mean
 	QS = 5.08 $\times 10^{-4}$. Among the 48 pairs where
 	$|\qV|/|\VaR_{\mathrm{raw}}| > 1$ (Chronos-Small and
 	Chronos-Mini, effective replacement), 38 (79.2\%) achieve Green.
-	In these cases, the conformal layer effectively defaults to a robust empirical quantile, providing a distribution-free safety mechanism rather than relying on misspecified model structure---a feature, not a limitation, of the model-agnostic design.
+	In these cases, the conformal layer does not preserve model-specific predictive structure but instead defaults to a statistically valid empirical quantile. This is not a limitation of the method per se but a direct consequence of enforcing coverage under model misspecification: when predictive structure is absent, any valid calibration procedure must revert to an empirical estimate.
+	The framework therefore distinguishes explicitly between models with genuine predictive content and those operating effectively as empirical quantile estimators.
 
-	Coverage is restored at a cost. VaR estimates widen, reflecting
+	This restoration comes at a cost. VaR estimates widen, reflecting
 	the calibration--efficiency trade-off
 	(Figure~\ref{fig:coverage_frontier}). The W/GJR column in
 	Table~\ref{tab:master} reports the ratio of each model's
@@ -1099,8 +1062,10 @@
 	\section{Discussion}
 	\label{sec:discuss}
 	\label{sec:failure}
-	
-	The conformal framework corrects heterogeneous miscalibration
+
+	The theoretical guarantee established in Section~\ref{sec:validity} applies strictly to the static split-conformal construction. The rolling implementation used in practice is an empirical deployment strategy whose strong empirical performance is documented in Section~\ref{sec:rolling_results} but is not supported by an equivalent formal guarantee. No claim is made that the rolling procedure satisfies the same asymptotic guarantees as the static construction.
+
+	The conformal framework empirically corrects heterogeneous miscalibration
 	across TSFM architectures without requiring knowledge of the
 	underlying failure mechanism. The cross-sectional results
 	(Table~\ref{tab:cross_sectional}) show that $\qV$ correlates
@@ -1111,12 +1076,12 @@
 	
 	A key limitation is structural. A scalar correction restores
 	violation frequency but cannot reshape the conditional
-	dynamics of the predictive distribution. The rolling variant
-	improves Christoffersen pass rates from 62\% to 81\%
-	(Table~\ref{tab:rolling_vs_static}), but remains a location
+	dynamics of the predictive distribution; the framework targets calibration rather than structural model improvement. Despite the substantial improvements in conditional coverage documented in Section~\ref{sec:rolling_results}, residual failures remain concentrated in specific assets. The rolling variant
+	(Table~\ref{tab:rolling_vs_static}) remains a location
 	adjustment: it captures time variation in miscalibration magnitude but does not model state-dependent quantile dynamics. Fully conditional recalibration---e.g., via a
 	one-sided adaptation of ACI \citep{gibbs2021adaptive}---remains
 	open.
+	Deriving formal coverage guarantees for rolling conformal procedures under temporal dependence remains an open theoretical problem and a natural direction for future research.
 
 	The residual conditional coverage failures concentrate on assets
 	with high score persistence. Among the 41 model--asset pairs that
@@ -1130,32 +1095,7 @@
 	se---are the binding constraint on conditional coverage for the
 	rolling variant.
 
-	The economic benefit is quantifiable through the Basel capital
-	multiplier ($k \in [3,4]$). The conformal correction trades a
-	modest width increase (0.93--1.05$\times$ GJR-GARCH) for zone
-	improvement from Red/Yellow to Green. For the median TSFM
-	(Lag-Llama, W/GJR = 1.05), the corrected capital charge is
-	$3 \times 1.05 = 3.15\times$ VaR versus $3.65\times$ VaR
-	under the uncorrected Yellow classification---a net saving
-	of 14\%.
-
-	To illustrate the cumulative economic impact, consider the daily
-	capital charge $k \times |\widehat{\mathrm{VaR}}_t|$ for
-	S\&P~500 under three configurations: (i)~Lag-Llama at the
-	Yellow-zone multiplier ($k = 3.65$), (ii)~conformally corrected
-	Lag-Llama at the Green-zone multiplier ($k = 3.00$), and
-	(iii)~GJR-GARCH with conformal correction ($k = 3.00$). Over
-	the 1{,}824-day test window (2018--2026), reclassifying
-	Lag-Llama from Yellow to Green saves 17.8\% of the cumulative
-	charge (Figure~\ref{fig:capital_charge}). The saving is
-	mechanical---it equals exactly the multiplier ratio
-	$(3.65 - 3.00)/3.65$---confirming that the corrected and
-	uncorrected Lag-Llama produce nearly identical VaR widths on
-	this asset. The economic value of the conformal layer therefore
-	lies in regulatory compliance rather than interval shrinkage.
-	For models where the correction also tightens the interval
-	(GJR-GARCH, Table~\ref{tab:master}), the capital saving exceeds
-	the pure multiplier effect.
+	The economic benefit is quantifiable through the Basel capital multiplier ($k \in [3,4]$). The conformal correction trades a modest width increase (0.93--1.05$\times$ GJR-GARCH) for zone improvement from Red/Yellow to Green. For the median TSFM (Lag-Llama, W/GJR = 1.05), the corrected capital charge is $3 \times 1.05 = 3.15\times$ VaR versus $3.65\times$ VaR under the uncorrected Yellow classification---a net saving of 14\%. Cumulatively, for S\&P~500 over the 1{,}824-day test window (2018--2026), reclassifying Lag-Llama from Yellow to Green saves 17.8\% of the cumulative charge (Figure~\ref{fig:capital_charge}). The saving is mechanical---it equals exactly the multiplier ratio $(3.65 - 3.00)/3.65$---confirming that the corrected and uncorrected Lag-Llama produce nearly identical VaR widths on this asset. The economic value of the conformal layer therefore lies in regulatory compliance rather than interval shrinkage; for models where the correction also tightens the interval (GJR-GARCH, Table~\ref{tab:master}), the capital saving exceeds the pure multiplier effect.
 
 	\begin{figure}[htbp]
 		\centering
@@ -1191,53 +1131,22 @@
 	requires prior variance stabilisation.
 	
 	Table~\ref{tab:baselines} compares the conformal method with
-	four alternatives: (i)~\emph{scale correction},
+	several alternative post-hoc recalibration approaches, including scale correction, historical quantiles, quantile regression on residuals, Adaptive Conformal Inference, and isotonic regression: (i)~\emph{scale correction},
 	$\widehat{\VaR}_t^{\mathrm{sc}} = c \cdot
 	\widehat{\VaR}_t^{\mathrm{raw}}$ with $c$ chosen to match the
 	calibration-set violation rate; (ii)~\emph{historical quantile},
 	the empirical $\alpha$-quantile of calibration returns applied
 	as a flat forecast; (iii)~\emph{QR on residuals}, a linear
 	quantile regression of $r_t$ on $\hat{q}_t^{lo}$ at level
-	$\alpha$ \citep[cf.][]{romano2019conformalized}; and
+	$\alpha$ \citep[cf.][]{romano2019conformalized};
 	(iv)~\emph{isotonic regression}, a monotone mapping of
 	violation indicators on $\hat{q}_t^{lo}$, which fails to
-	produce a scalar VaR for most pairs (hence missing entries).
-	Conformal correction achieves the lowest QS
-	(5.24 $\times 10^{-4}$) and highest Green rate (86.6\%),
-	followed by quantile regression on residuals (5.31, 82.4\%).
-	More flexible approaches perform worse, highlighting that at
-	extreme quantiles the scalar shift achieves a favourable
-	bias--variance trade-off.
+	produce a scalar VaR for most pairs (hence missing entries); and
+	(v)~\emph{Adaptive Conformal Inference} (ACI) \citep{gibbs2021adaptive}, which dynamically updates the target coverage level based on past violations.
+	Conformal correction achieves the lowest QS (5.24 $\times 10^{-4}$) and highest Green rate (86.6\%), followed by quantile regression on residuals (5.31, 82.4\%). More flexible approaches perform strictly worse, reflecting a fundamental sample-size constraint: at $\alpha = 0.01$ with approximately 1{,}500 test observations per asset, the expected number of tail violations is ${\sim}15$, so any method with $k$ free parameters must estimate its additional degrees of freedom from $O(\alpha T)$ effective tail observations, leading to high variance that offsets any bias reduction. The single-parameter conformal shift and quantile regression on residuals---which reduces to a near-scalar correction at extreme quantiles---cluster at the top, consistent with the one-parameter rule being empirically near-optimal among low-parameter corrections in finite samples at extreme quantiles.
 
-	The optimality of the scalar correction at extreme quantiles
-	reflects a fundamental sample-size constraint. At
-	$\alpha = 0.01$ with approximately 1{,}500 test observations
-	per asset, the expected number of tail violations is
-	${\sim}15$. Any calibration method with more than one free
-	parameter must estimate its additional degrees of freedom from
-	these ${\sim}15$ data points, leading to high variance that
-	offsets any bias reduction. The conformal shift, with exactly
-	one parameter estimated from the full calibration sample rather
-	than from tail observations alone, achieves the most favourable
-	bias--variance trade-off in this sparse-data regime. This
-	explains the empirical ordering in
-	Table~\ref{tab:baselines}: more flexible methods (isotonic
-	regression, scale correction) perform strictly worse, while the
-	single-parameter conformal shift and quantile regression on
-	residuals---which also reduces to a near-scalar correction at
-	extreme quantiles---cluster at the top.
-
-	The comparison extends to purpose-built VaR models. GARCH-N with
-	conformal correction (Table~\ref{tab:master}, Panel~A:
-	QS $= 4.7 \times 10^{-4}$, 21/24 Green) dominates both EVT-POT
-	(QS $= 5.5$, 18/24 Green) and filtered historical simulation
-	(QS $= 5.6$, 13/24 Green), despite requiring no tail
-	distribution fitting, no threshold selection, and no GPD
-	estimation. A simple base model with a one-parameter conformal
-	shift outperforms dedicated tail risk approaches that involve
-	substantially greater implementation complexity.
-	This result reflects the 250-day rolling window---consistent with practical implementations under regulatory conventions---and associated estimation noise in parametric tail models; under longer estimation samples or carefully tuned thresholds, EVT-based methods may perform differently.
-	Adaptive Conformal Inference \citep{gibbs2021adaptive} yields comparable coverage but typically wider VaR intervals (Table~\ref{tab:baselines}), consistent with its symmetric adjustment mechanism.
+	The comparison extends to purpose-built VaR models. GARCH-N with conformal correction (Table~\ref{tab:master}, Panel~A: QS $= 4.7 \times 10^{-4}$, 21/24 Green) dominates both EVT-POT (QS $= 5.5$, 18/24 Green) and filtered historical simulation (QS $= 5.6$, 13/24 Green) under the short 250-day rolling windows typical of regulatory implementations, despite requiring no tail distribution fitting, no threshold selection, and no GPD estimation. Under longer estimation samples or carefully tuned thresholds, EVT-based methods may perform differently; the result should therefore be read as evidence of robustness under short-sample conditions rather than general dominance over parametric tail models.
+	Adaptive Conformal Inference \citep{gibbs2021adaptive} achieves a higher Green rate than the proposed method, while the proposed method achieves a lower Quantile Score and narrower VaR intervals (Table~\ref{tab:baselines}). This reflects a genuine calibration--sharpness trade-off: ACI's dynamic $\alpha_t$ adjustment prioritises coverage at the cost of wider bands, whereas the fixed-$\alpha$ conformal shift prioritises efficiency. Neither approach dominates; the choice depends on whether the practitioner values tighter capital reserves or more robust coverage.
 
 	\begin{table}[H]
 		\centering
@@ -1263,20 +1172,7 @@
 		\end{tabular}
 	\end{table}
 
-	EVT Peaks-over-Threshold \citep{mcneil2000estimation} and
-	filtered historical simulation
-	\citep{baroneadesi1999var} are purpose-built tail risk models,
-	not post-hoc calibration methods. Their inclusion in
-	Table~\ref{tab:baselines} demonstrates that conformal
-	correction of a simple base model (e.g., GARCH-N + conformal)
-	achieves competitive or superior performance relative to more
-	complex dedicated VaR approaches, while requiring substantially
-	less implementation effort and no distributional assumptions.
-	The EVT-POT implementation exhibited frequent fallbacks to
-	empirical quantiles (GPD convergence failure rate ${>}10\%$ on
-	all 24 assets), underscoring the fragility of parametric tail
-	estimation on short rolling windows---a practical limitation
-	that the distribution-free conformal approach avoids by design.
+	EVT-POT and filtered historical simulation are purpose-built tail risk models, not post-hoc calibration methods. The EVT-POT implementation exhibited frequent fallbacks to empirical quantiles (GPD convergence failure rate ${>}10\%$ on all 24 assets), underscoring the fragility of parametric tail estimation on short rolling windows---a practical limitation that the distribution-free conformal approach avoids by design.
 
 	For practitioners, GJR-GARCH with static conformal correction
 	dominates for standalone 1\% VaR on individual assets: it
@@ -1292,11 +1188,12 @@
 	the replacement regime, retaining only those with genuine
 	predictive content in the tail.
 
-	Fissler--Ziegel scores provide a joint diagnostic for VaR and Expected Shortfall \citep{fissler2016higher}. Conformal correction improves joint tail performance for most models, particularly those with severe miscalibration, while improvements are naturally smaller for already well-calibrated specifications. These results should be interpreted as diagnostic, as the ES component remains heuristic.
+	Fissler--Ziegel scores provide a joint diagnostic for VaR and Expected Shortfall \citep{fissler2016higher}. Conformal correction improves joint tail performance for most models, particularly those with severe miscalibration, while improvements are naturally smaller for already well-calibrated specifications. These results should be interpreted with caution due to the heuristic ES component, and remain informative for comparative evaluation across models despite the absence of formal guarantees.
+	Accordingly, Expected Shortfall results are presented as secondary diagnostics rather than as a primary object of calibration.
 
 	\begin{table}[H]
 		\centering
-		\caption{Fissler--Ziegel FZ$_0$ joint VaR-ES scores (mean across 24 assets, $\alpha = 0.01$). Lower is better. The ES component uses the Gaussian heuristic (Appendix~\ref{app:es}). Chronos raw scores are undefined due to severe miscalibration ($|\qV|/|\mathrm{VaR}_{\mathrm{raw}}| > 1$).}
+		\caption{Fissler--Ziegel FZ$_0$ joint VaR-ES scores (mean across 24 assets, $\alpha = 0.01$). Lower is better. The ES component uses the heuristic correction described in Appendix~\ref{app:es}. Chronos raw scores are undefined due to severe miscalibration ($|\qV|/|\mathrm{VaR}_{\mathrm{raw}}| > 1$).}
 		\label{tab:fz_scores}
 		\footnotesize
 		\begin{tabular}{@{}lrrr@{}}
@@ -1329,37 +1226,7 @@
 	conformal recalibration of fine-tuned TSFMs is a natural next
 	step.
 	
-	The Basel III Fundamental Review of the Trading Book (FRTB)
-	replaces VaR with Expected Shortfall as the primary regulatory
-	risk measure, making distribution-free ES calibration an urgent
-	practical need. The joint score $s^J_t$ (Appendix~\ref{app:es})
-	offers a pathway, but two obstacles remain: (i)~ES is not
-	elicitable in isolation \citep{gneiting2011making}, requiring
-	joint treatment with VaR; and (ii)~the conditioning mismatch
-	(Definition~\ref{def:es_score}) means that the conformal
-	correction for ES evaluated on corrected VaR violation days is
-	inherently conservative. A formally guaranteed ES
-	recalibration---potentially combining the Fissler--Ziegel joint
-	scoring function with a two-dimensional conformal
-	procedure---is the most pressing open problem for regulatory
-	applications of this framework. Three technical pathways merit
-	investigation: (i)~Conformal Risk Control
-	\citep{angelopoulos2024conformal}, which bounds expected losses
-	rather than quantile coverage, but requires extension to
-	dependent data; (ii)~a joint nonconformity score based on the
-	Fissler--Ziegel loss (Definition~\ref{def:joint_score}), which
-	respects the joint elicitability of $(\VaR, \ES)$ but inherits
-	the conditioning mismatch documented in
-	Appendix~\ref{app:es}; and (iii)~tail-shape properification via
-	Extreme Value Theory, which corrects distributional shape rather
-	than location but introduces additional estimation uncertainty
-	in the sparse tail region. Each pathway resolves one obstacle
-	while introducing another; a unified solution remains open. The
-	empirical results in Table~\ref{tab:es_correction} provide a
-	starting point for evaluating these alternatives.
-	The framework applies to univariate VaR by
-	construction; portfolio-level and illiquid-asset extensions
-	raise open theoretical questions under dependence.
+	The Basel III Fundamental Review of the Trading Book (FRTB) replaces VaR with Expected Shortfall as the primary regulatory risk measure, making distribution-free ES calibration a practical need. The joint score $s^J_t$ (Appendix~\ref{app:es}) offers a pathway, but obstacles remain: ES is not elicitable in isolation \citep{gneiting2011making}, requiring joint treatment with VaR; and the conditioning mismatch (Definition~\ref{def:es_score}) means that ES correction on corrected VaR violation days is inherently conservative. Three pathways merit investigation: Conformal Risk Control \citep{angelopoulos2024conformal}, a joint Fissler--Ziegel nonconformity score, and EVT-based tail-shape properification. Each resolves one obstacle while introducing another; Table~\ref{tab:es_correction} provides a starting point, but a unified solution remains open. The framework applies to univariate VaR by construction; portfolio-level and illiquid-asset extensions raise open theoretical questions under dependence.
 	
 	%══════════════════════════════════════════════════════════════════════════════
 	%─── PART 10: Conclusion ───────────────────────────────────────────────────
@@ -1367,37 +1234,12 @@
 	\section{Conclusion}
 	\label{sec:conclude}
 	
-	This paper develops a one-sided conformal recalibration
-	framework for Value-at-Risk that delivers approximate coverage
-	guarantees under $\beta$-mixing dependence. Across five time
-	series foundation models, four parametric benchmarks, and 24
-	assets over 2000--2026, conformal correction achieves Basel
-	Green Zone compliance for the large majority of model--asset
-	combinations, with no Red Zone classifications.
-	
-	The conformal threshold $\qV$ serves a dual role: as a
-	model-agnostic corrective shift restoring coverage, and as a
-	signed diagnostic that ranks forecasters by tail adequacy and
-	tracks regime-dependent miscalibration. At the same time, the
-	method enforces violation frequency without improving the
-	underlying predictive distribution---it is a calibration layer,
-	not a substitute for model quality.
-	The framework does not recover structural predictive content where none exists; in extreme miscalibration regimes, it provides a statistically valid empirical fallback rather than a model improvement.
+	This paper develops a one-sided conformal recalibration framework for Value-at-Risk that is supported by an approximate asymptotic coverage result under $\beta$-mixing dependence. Across five time series foundation models, four parametric benchmarks, and 24 assets over 2000--2026, conformal correction achieves Basel Green Zone compliance for a majority of model--asset combinations, with no Red Zone classifications.
 
-	Several directions remain open: extending distribution-free
-	calibration to Expected Shortfall, developing formal guarantees
-	for rolling implementations under dependence, and integrating
-	conformal recalibration with direct quantile estimators or
-	fine-tuned foundation models. A boundary condition deserves
-	emphasis: the $\beta$-mixing assumption underlying the coverage
-	guarantee is most strained for assets with inventory-driven
-	jump dynamics (notably WTI and NATGAS), where the framework
-	achieves lower Green rates despite adequate performance on
-	assets with comparable or higher kurtosis.
-	The underlying principle is simple: calibration can be
-	separated from prediction, placing heterogeneous models on a
-	common, statistically valid footing.
-	
+	The conformal threshold $\qV$ serves a dual role: as a model-agnostic corrective shift that empirically restores coverage in finite samples, and as a continuous, signed diagnostic that ranks forecasters by tail adequacy and tracks regime-dependent miscalibration. The framework targets validity, not predictive structure: in severely misspecified settings, it provides a statistically valid empirical fallback rather than recovering structural predictive content.
+
+	Several directions remain open: extending distribution-free calibration to Expected Shortfall, developing formal guarantees for rolling implementations under dependence, and integrating conformal recalibration with fine-tuned foundation models. More broadly, the framework should be interpreted as a contribution to forecast calibration under dependence, providing a minimal and interpretable adjustment that enforces statistical validity at the forecast level without altering the underlying predictive mechanism.
+
 	\section*{Data and Code Availability}
 	The full replication pipeline is available in a public repository (link provided upon acceptance). All return data are sourced from Yahoo Finance. All foundation model checkpoints are open-weight and hosted on HuggingFace (Table~\ref{tab:models}); no proprietary API access is required.
 
@@ -1614,7 +1456,46 @@
 		\Delta_n = O\!\left(\sqrt{\frac{\log n}{n}}\right).
 		\]
 	\end{proof}
-	
+
+	\subsection{Local Coverage of the Rolling Variant}
+	\label{app:rolling_coverage}
+
+	\begin{proposition}[Heuristic local coverage bound for the rolling variant]
+		\label{prop:rolling_coverage}
+		Suppose that within each rolling window $[t-w,\, t-1]$, the
+		score process $\{S_\tau\}_{\tau=t-w}^{t-1}$ satisfies
+		Assumption~\ref{ass:main} locally with mixing coefficients
+		$\beta_w(k) \leq C_w \rho_w^k$. Then
+		\[
+		\P\!\left(r_t \geq \hat{q}_t^{lo} - \hat{q}_{V,t}\right)
+		\geq 1 - \alpha - \Delta_w,
+		\]
+		where $\Delta_w = O(\sqrt{\log w / w})$ and $w$ is the window
+		size.
+	\end{proposition}
+
+	\begin{proof}
+		Formally applying Theorem~\ref{thm:dependent_conformal_var} to the
+		sub-sample $\{S_\tau\}_{\tau=t-w}^{t-1}$ with $n = w$. The
+		local stationarity assumption ensures that
+		Assumption~\ref{ass:main} holds within each window, yielding
+		the same remainder bound with $n$ replaced by $w$. The result
+		follows window-by-window; no global stationarity is required.
+		This result is heuristic and does not constitute a formal coverage guarantee under general temporal dependence.
+	\end{proof}
+
+	The local stationarity assumption is substantially weaker than
+	requiring global $\beta$-mixing over the full sample: it permits
+	regime changes \emph{between} windows provided that within each
+	250-day block the score process is approximately stationary.
+	For $w = 250$, the bound gives $\Delta_{250} \approx 0.15$,
+	guaranteeing $\geq$84\% coverage per window---conservative but
+	non-vacuous. The empirical rolling coverage of 99.1\%
+	(Table~\ref{tab:rolling_vs_static}) substantially exceeds this
+	floor, consistent with the conservativeness observed for the
+	static bound (Table~\ref{tab:delta_n}).
+	The bound is conservative by construction and is not intended as a tight finite-sample guarantee; its role is to formalize the direction of the correction under local dependence, confirming that the rolling procedure does not forfeit coverage validity.
+
 	\subsection{Sketch for Remark~\ref{prop:joint_conformal_var_es}}
 	
 	Under exchangeability, the rank of $s_{n+1}^J$ is uniform on $\{1,\ldots,n+1\}$, giving $\P(s_{n+1}^J \le \hat{q}_J) \geq 1 - \alpha$ by the standard split conformal argument \citep{vovk2005algorithmic}. Under $\beta$-mixing, the score $s_t^J = h(r_t, \widehat{\VaR}_t, \widehat{\ES}_t)$ inherits the mixing properties of $\{r_t\}$, and Theorem~\ref{thm:dependent_conformal_var} applies with the same remainder $\Delta_n$.
