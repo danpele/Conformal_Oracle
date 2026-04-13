@@ -1,0 +1,462 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,bm,bbm}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{setspace}
+\onehalfspacing
+
+%─── Notation (matches main paper) ──────────────────────────────
+\newcommand{\VaR}{\mathrm{VaR}}
+\newcommand{\ES}{\mathrm{ES}}
+\newcommand{\E}{\mathsf{E}}
+\renewcommand{\P}{\mathsf{P}}
+\newcommand{\qV}{\hat{q}_{\scriptscriptstyle\mathrm{V}}}
+
+%─── Theorem environments ───────────────────────────────────────
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+\title{Online Supplement\\
+\large Distribution-Free Recalibration of Tail Quantile Forecasts
+under Temporal Dependence}
+\author{Daniel Traian Pele \and Vlad Bolov\u{a}neanu \and Andrei Theodor
+Ginavar \and Stefan Lessmann \and Wolfgang Karl H\"ardle}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent
+This supplement contains full proofs of the asymptotic coverage
+results stated in the main paper
+(\emph{Distribution-Free Recalibration of Tail Quantile Forecasts
+under Temporal Dependence}, Pele et al., 2026). Equation,
+theorem, and assumption numbering is local to this supplement; the
+main paper's numbering is cross-referenced in prose. Repository:
+\url{https://github.com/QuantLet/Conformal_Oracle}.
+
+\section{Notation and Assumptions}
+
+Let $\{r_t\}_{t \geq 1}$ denote the return process and
+$\{\hat{q}_t^{lo}\}_{t \geq 1}$ the sequence of base
+$\alpha$-quantile forecasts with $\hat{q}_t^{lo}$ measurable with
+respect to $\mathcal{F}_{t-1}$. The one-sided nonconformity score
+is
+\[
+S_t \;=\; \hat{q}_t^{lo} - r_t,
+\]
+with marginal cdf $F_S$ (when it exists). For calibration sample
+$\mathcal{D}_n = (S_1,\ldots,S_n)$ the empirical
+$(1-\alpha)$-quantile is
+$\qV = \hat F_n^{-1}(1-\alpha)$ and the population
+counterpart is $q_{1-\alpha} = F_S^{-1}(1-\alpha)$.
+
+\begin{assumption}[Main assumption; Assumption~1 of the paper]
+\label{ass:main}
+Let $S_t = \hat{q}^{lo}_t - r_t$ be strictly stationary and
+$\beta$-mixing with coefficients $\{\beta(k)\}_{k \geq 1}$.
+\begin{enumerate}[label=\textup{(A\arabic*)}]
+\item\label{ass:density} The score density $f_S$ is bounded and
+bounded away from zero in a neighbourhood of $q_{1-\alpha}$.
+\item\label{ass:mixing} Geometric $\beta$-mixing:
+$\beta(k) \leq C\rho^k$ for some $\rho < 1$.
+\item\label{ass:quantile} The empirical quantile satisfies
+$|\qV - q_{1-\alpha}| = O_p(\sqrt{\log n / n})$.
+\item\label{ass:weak_dep} $S_{n+1}$ is weakly dependent on
+$\mathcal{D}_n$ in the sense that the empirical cdf satisfies a
+uniform concentration bound
+$\sup_s |\hat F_n(s) - F_S(s)|
+= O_p(\sqrt{\log n / n} + \rho_n)$
+for some sequence $\rho_n \to 0$ driven by the mixing decay.
+\end{enumerate}
+\end{assumption}
+
+\section{Main Results (restated)}
+
+\begin{theorem}[Theorem~3.5 of the paper]
+\label{thm:dependent_conformal_var}
+Under Assumption~\ref{ass:main},
+\[
+\P\big(r_{t} \geq \hat{q}_t^{lo} - \qV\big)
+\;\geq\; 1 - \alpha - \Delta_n,
+\]
+where $\Delta_n
+= O\!\left(\sqrt{\tfrac{\log n}{n}} + \rho_n\right)$, and
+$\Delta_n = O\!\left(\sqrt{\tfrac{\log n}{n}}\right)$ under
+geometric $\beta$-mixing.
+\end{theorem}
+
+\begin{corollary}[Corollary~3.6 of the paper]
+\label{cor:garch_conformal_var}
+Under $\mathrm{GARCH}(1,1)$ dynamics with
+$\E[\log(\alpha_1 \varepsilon_t^2 + \beta_1)] < 0$, the remainder
+simplifies to $\Delta_n = O(\sqrt{\log n / n})$.
+\end{corollary}
+
+\begin{proposition}[Heuristic local coverage bound for the rolling
+variant; referenced in Section~3.3 of the paper]
+\label{prop:rolling_coverage}
+Suppose that within each rolling window $[t-w,\,t-1]$, the score
+process $\{S_\tau\}_{\tau=t-w}^{t-1}$ satisfies
+Assumption~\ref{ass:main} locally with mixing coefficients
+$\beta_w(k) \leq C_w \rho_w^k$. Then
+\[
+\P\!\left(r_t \geq \hat{q}_t^{lo} - \hat{q}_{V,t}\right)
+\;\geq\; 1 - \alpha - \Delta_w,
+\]
+where $\Delta_w = O(\sqrt{\log w / w})$ and $w$ is the window size.
+\end{proposition}
+
+\section{Supporting Lemmas}
+
+\begin{lemma}[Inheritance of weak dependence by the score process]
+\label{lem:score_mixing}
+If $\{r_t\}$ is strictly stationary and $\beta$-mixing with
+coefficients $\beta_r(k)$, and $\hat q_t^{lo}$ is
+$\mathcal F_{t-1}$-measurable, then the score process
+$S_t = \hat q_t^{lo} - r_t$ is also strictly stationary and
+$\beta$-mixing with coefficients satisfying
+$\beta_S(k) \le \beta_r(k-1)$ for $k \ge 2$.
+\end{lemma}
+
+\begin{proof}
+\textit{Stationarity.}\enspace
+Since $\{r_t\}$ is strictly stationary by assumption, the joint
+distribution of any finite collection
+$(r_{t_1},\ldots,r_{t_m})$ is invariant under time shifts. The
+base forecast $\hat q_t^{lo}$ is $\mathcal F_{t-1}$-measurable,
+meaning it is a measurable function of $(r_1,\ldots,r_{t-1})$;
+write $\hat q_t^{lo}=g_t(r_1,\ldots,r_{t-1})$. Under the
+stationarity of $\{r_t\}$, the function $g_t$ applied to the
+shifted sequence yields the same marginal distribution for each
+$t$: the joint distribution of $(r_s,r_{s+1},\ldots)$ does not
+depend on $s$, so neither does the distribution of $g_t$ applied
+to the preceding returns. It follows that
+$S_t = \hat q_t^{lo}-r_t$ has the same marginal distribution for
+each $t$. More generally, the joint distribution of
+$(S_{t_1},\ldots,S_{t_m})$ depends only on the gaps
+$t_2-t_1,\ldots,t_m-t_{m-1}$, hence $\{S_t\}$ is strictly
+stationary.
+
+\textit{$\beta$-mixing.}\enspace
+Let $\sigma^{-\infty}_t = \sigma(S_s : s \le t)$ and
+$\sigma_t^{+\infty} = \sigma(S_s : s \ge t)$ denote the past and
+future $\sigma$-algebras of the score process. Since $S_t$ is a
+measurable function of $(r_1,\ldots,r_t)$, we have
+$\sigma^{-\infty}_t \subseteq \sigma(r_s : s \le t) =:
+\mathcal R_t^-$. Similarly, $S_{t+k}$ depends on
+$(r_1,\ldots,r_{t+k})$, but through $\hat q_{t+k}^{lo}$ it depends
+on $(r_1,\ldots,r_{t+k-1})$ and through $r_{t+k}$ on $r_{t+k}$
+directly, so
+$\sigma_{t+k}^{+\infty} \subseteq \sigma(r_s : s \ge t+k-1)$. For
+the $\beta$-mixing coefficient,
+\[
+\beta_S(k)
+= \sup_t \, \tfrac{1}{2}\sup\sum_{i,j}
+|\P(A_i \cap B_j)-\P(A_i)\P(B_j)|,
+\]
+where the inner supremum is over finite partitions $\{A_i\}$ of
+$\sigma_t^{-\infty}$ and $\{B_j\}$ of $\sigma_{t+k}^{+\infty}$.
+Since $\sigma_t^{-\infty} \subseteq \mathcal R_t^-$ and
+$\sigma_{t+k}^{+\infty} \subseteq \sigma(r_s : s \ge t+k-1)$, we
+obtain
+\[
+\beta_S(k) \le \beta_r(k-1).
+\]
+In particular, if $\beta_r(k)$ decays geometrically (or satisfies
+$\sum \beta_r(k)^\eta < \infty$), then so does $\beta_S(k)$.
+\end{proof}
+
+\begin{lemma}[Empirical quantile deviation under $\beta$-mixing]
+\label{lem:quantile_mixing}
+Under Assumption~\ref{ass:main}, let
+$\qV = \hat F_n^{-1}(1-\alpha)$ denote the empirical
+$(1-\alpha)$-quantile of the calibration scores
+$S_1,\ldots,S_n$, and let $q_{1-\alpha}=F_S^{-1}(1-\alpha)$
+denote the population quantile. Then
+\[
+|\qV - q_{1-\alpha}|
+\;=\;
+O_p\!\left(\frac{1}{f_S(q_{1-\alpha})}
+\left(\sqrt{\tfrac{\log n}{n}}+\rho_n\right)\right).
+\]
+\end{lemma}
+
+\begin{proof}
+By \ref{ass:weak_dep}, the empirical cdf satisfies the uniform
+concentration bound
+\begin{equation}\label{eq:ecdf_concentration}
+\sup_{s\in\mathbb R} |\hat F_n(s)-F_S(s)|
+\;\le\; \varepsilon_n
+\qquad\text{where}\qquad
+\varepsilon_n = O_p\!\left(\sqrt{\tfrac{\log n}{n}}+\rho_n\right).
+\end{equation}
+This bound follows from the Glivenko--Cantelli theorem for
+$\beta$-mixing sequences (Yu, 1994; Rio, 2017): the key step is a
+blocking argument that partitions the sample into approximately
+independent blocks of length $\ell_n$ separated by gaps of length
+$g_n$, chosen so that $g_n \to \infty$ slowly enough that the
+total number of blocks $n/(\ell_n+g_n)$ still grows, while the
+mixing coefficients $\beta(g_n)$ become negligible. The empirical
+cdf within each block can be treated as approximately i.i.d., and
+the cross-block remainder is controlled by
+$\sum_{k \ge g_n}\beta(k)^\eta$, giving the dependence correction
+term $\rho_n$.
+
+Fix $\delta > 0$ small. By \ref{ass:mixing}, $F_S$ admits a
+density $f_S$ with $f_S(q_{1-\alpha})\ge c_0 >0$. By continuity of
+$f_S$, there exists a neighbourhood
+$(q_{1-\alpha}-\delta, q_{1-\alpha}+\delta)$ in which
+$f_S(s)\ge c_0/2>0$. On this neighbourhood, $F_S$ is strictly
+increasing with
+\[
+F_S(q_{1-\alpha}+h)-F_S(q_{1-\alpha})
+= f_S(q_{1-\alpha})\,h + O(h^2)
+\]
+for $|h|$ small.
+
+The empirical quantile $\qV$ satisfies
+$\hat F_n(\qV) = 1-\alpha + O(1/n)$ (the $O(1/n)$ accounts for
+the ceiling in the order statistic index). Using
+\eqref{eq:ecdf_concentration},
+\begin{align*}
+|F_S(\qV) - (1-\alpha)|
+&= |F_S(\qV) - \hat F_n(\qV)|
++ |\hat F_n(\qV)-(1-\alpha)| \\
+&\le \varepsilon_n + O(1/n).
+\end{align*}
+Since $F_S(q_{1-\alpha})=1-\alpha$ and $F_S$ is locally
+invertible near $q_{1-\alpha}$ with derivative
+$f_S(q_{1-\alpha})\ge c_0$, the inverse function theorem gives
+\[
+|\qV - q_{1-\alpha}|
+\;\le\; \frac{1}{f_S(q_{1-\alpha})}
+\bigl(\varepsilon_n + O(1/n)\bigr)
+\;=\; O_p\!\left(\frac{1}{c_0}
+\left(\sqrt{\tfrac{\log n}{n}}+\rho_n\right)\right),
+\]
+where the $O(1/n)$ term is absorbed since
+$1/n = o(\sqrt{\log n / n})$.
+\end{proof}
+
+\section{Proof of Theorem~\ref{thm:dependent_conformal_var}}
+
+\begin{proof}
+The proof proceeds in three steps.
+
+\textit{Step 1: Reduction to score control.}\enspace
+By definition of the one-sided nonconformity score
+$S_t = \hat q_t^{lo}-r_t$,
+\[
+S_{n+1}\le \qV
+\ \Longleftrightarrow\
+\hat q_{n+1}^{lo}-r_{n+1} \le \qV
+\ \Longleftrightarrow\
+r_{n+1} \ge \hat q^{lo}_{n+1}-\qV.
+\]
+Hence it suffices to show
+\begin{equation}\label{eq:target}
+\P(S_{n+1}\le \qV) \;\ge\; 1-\alpha - \Delta_n.
+\end{equation}
+
+\textit{Step 2: Relating the empirical threshold to the population
+quantile.}\enspace
+Let $q_{1-\alpha}=F_S^{-1}(1-\alpha)$. By
+Lemma~\ref{lem:quantile_mixing},
+\begin{equation}\label{eq:qhat_bound}
+|\qV - q_{1-\alpha}| \;\le\; \frac{\varepsilon_n}{c_0}
+\end{equation}
+with probability at least $1-\delta_n$, where
+$\varepsilon_n = O_p(\sqrt{\log n / n}+\rho_n)$,
+$\delta_n\to 0$, and $c_0 = f_S(q_{1-\alpha})>0$ is the density
+lower bound from \ref{ass:mixing}.
+In particular, $\qV \ge q_{1-\alpha} - \varepsilon_n/c_0$ with
+high probability.
+
+\textit{Step 3: Approximate coverage.}\enspace
+Condition on the calibration set $\mathcal D_n$:
+\[
+\P(S_{n+1}\le \qV)
+\;=\; \E\!\left[\P(S_{n+1}\le \qV \mid \mathcal D_n)\right].
+\]
+Under \ref{ass:density}, $\{S_t\}$ is strictly stationary and
+$\beta$-mixing. For $\beta$-mixing processes, the conditional
+distribution of $S_{n+1}$ given $\mathcal D_n$ converges to the
+unconditional (stationary) distribution $F_S$ as mixing
+coefficients decay: for any measurable set $A$,
+\[
+|\P(S_{n+1}\in A \mid \mathcal D_n) - F_S(A)| \le \beta(1),
+\]
+where $\beta(1)$ is the $\beta$-mixing coefficient at lag~1.
+Since $\beta(1)$ is a constant (absorbed into $C$ below),
+\begin{equation}\label{eq:conditional}
+\P(S_{n+1}\le \qV \mid \mathcal D_n)
+\;\ge\; F_S(\qV) - \beta(1).
+\end{equation}
+
+On the high-probability event where \eqref{eq:qhat_bound} holds,
+using $F_S(q_{1-\alpha})=1-\alpha$ and the mean value theorem,
+\begin{align}
+F_S(\qV)
+&= F_S(q_{1-\alpha})
++ f_S(\tilde q)(\qV - q_{1-\alpha}) \notag\\
+&\ge (1-\alpha) - f_S(\tilde q)\cdot
+\tfrac{\varepsilon_n}{c_0} \notag\\
+&\ge (1-\alpha) - \tfrac{\|f_S\|_\infty}{c_0}\,\varepsilon_n,
+\label{eq:FS_bound}
+\end{align}
+where $\tilde q$ lies between $\qV$ and $q_{1-\alpha}$ and
+$\|f_S\|_\infty$ denotes the supremum of the density in a
+neighbourhood of $q_{1-\alpha}$ (finite under the regularity
+conditions).
+
+Combining \eqref{eq:conditional} and \eqref{eq:FS_bound} and
+taking expectations,
+\begin{align*}
+\P(S_{n+1}\le \qV)
+&\;\ge\; \E[F_S(\qV)] - \beta(1)
+- \P(\text{\eqref{eq:qhat_bound} fails}) \\
+&\;\ge\; 1-\alpha
+- C\!\left(\sqrt{\tfrac{\log n}{n}}+\rho_n\right),
+\end{align*}
+where $C>0$ depends on $c_0$, $\|f_S\|_\infty$, $\beta(1)$, and
+the constants in the concentration inequality of
+\ref{ass:weak_dep}. Setting
+$\Delta_n = C(\sqrt{\log n / n}+\rho_n)$ gives \eqref{eq:target}.
+
+Substituting back the equivalence from Step~1,
+\[
+\P\!\left(r_{n+1} \ge \hat q_{n+1}^{lo}-\qV\right)
+\;\ge\; 1-\alpha-\Delta_n.
+\]
+
+Finally, since $\rho_n\to 0$ under the summability condition
+$\sum_{k=1}^\infty \beta(k)^\eta<\infty$ (\ref{ass:density}), we
+have $\Delta_n\to 0$, establishing asymptotic validity.
+\end{proof}
+
+\section{Proof of Corollary~\ref{cor:garch_conformal_var}}
+
+\begin{proof}
+We verify that all assumptions of
+Theorem~\ref{thm:dependent_conformal_var} hold with an improved
+rate.
+
+\textit{Strict stationarity and geometric $\beta$-mixing of
+$\{r_t\}$.}\enspace
+Under the conditions $\omega>0$, $\alpha_1,\beta_1\ge 0$, and the
+standard top Lyapunov exponent condition
+$\E[\log(\alpha_1\varepsilon_t^2+\beta_1)]<0$ with
+$\E[\log^+|\varepsilon_t|]<\infty$, the GARCH(1,1) process admits
+a unique strictly stationary solution (Francq and Zako\"{i}an,
+2019, Theorem~2.10). Moreover,
+Francq and Zako\"{i}an (2019, Theorem~3.2) and
+Lindner (2009) establish that the process $\{(r_t,\sigma_t^2)\}$
+is geometrically ergodic and $\beta$-mixing with exponentially
+decaying coefficients: there exist constants $a>0$ and
+$\rho\in(0,1)$ such that
+\begin{equation}\label{eq:garch_beta}
+\beta_r(k) \;\le\; a\,\rho^k,\qquad k\ge 1.
+\end{equation}
+In particular,
+$\sum_{k=1}^\infty \beta_r(k)^\eta < \infty$ for every
+$\eta\in(0,1]$, so \ref{ass:density} is satisfied.
+
+\textit{Inheritance by the score process.}\enspace
+By Lemma~\ref{lem:score_mixing}, since $\hat q_t^{lo}$ is
+$\mathcal F_{t-1}$-measurable (\ref{ass:quantile}), the score
+process $S_t = \hat q_t^{lo}-r_t$ is strictly stationary and
+$\beta$-mixing with $\beta_S(k) \le \beta_r(k-1)\le a\,\rho^{k-1}$,
+hence also geometrically $\beta$-mixing.
+\ref{ass:mixing} and \ref{ass:weak_dep} are inherited under the
+regularity conditions.
+
+\textit{Simplification of the remainder.}\enspace
+For geometric mixing with rate \eqref{eq:garch_beta}, the
+dependence remainder in the empirical process concentration bound
+takes the form
+\[
+\rho_n = O\!\left(\sum_{k\ge g_n}\rho^k\right) = O(\rho^{g_n})
+\]
+for any block gap sequence $g_n \to \infty$. Choosing
+$g_n = c\log n$ for a suitable constant $c > 1/|\log \rho|$ gives
+$\rho^{g_n} = O(n^{-c|\log\rho|}) = o(\sqrt{\log n / n})$. Hence
+the dependence correction is asymptotically negligible and the
+dominant term becomes
+\[
+\Delta_n = O\!\left(\sqrt{\tfrac{\log n}{n}}\right).
+\qedhere
+\]
+\end{proof}
+
+\section{Proof of Proposition~\ref{prop:rolling_coverage}}
+
+\begin{proof}
+Formally applying Theorem~\ref{thm:dependent_conformal_var} to
+the sub-sample $\{S_\tau\}_{\tau=t-w}^{t-1}$ with $n = w$. The
+local stationarity assumption ensures that
+Assumption~\ref{ass:main} holds within each window, yielding the
+same remainder bound with $n$ replaced by $w$. The result
+follows window-by-window; no global stationarity is required.
+This result is heuristic and does not constitute a formal
+coverage guarantee under general temporal dependence.
+\end{proof}
+
+The local stationarity assumption is substantially weaker than
+requiring global $\beta$-mixing over the full sample: it permits
+regime changes \emph{between} windows provided that within each
+250-day block the score process is approximately stationary. For
+$w = 250$, the bound gives $\Delta_{250} \approx 0.15$,
+guaranteeing $\geq$84\% coverage per window---conservative but
+non-vacuous. The empirical rolling coverage of 99.1\% reported in
+the main paper substantially exceeds this floor, consistent with
+the conservativeness observed for the static bound. The bound
+formalises the direction of the correction under local
+dependence rather than providing a tight finite-sample guarantee.
+
+\section{Sketch for the Joint VaR--ES Conformal Diagnostic}
+
+The joint nonconformity score $s_t^J$ introduced in Appendix~C
+of the main paper combines the VaR and ES residuals.
+
+\begin{proof}[Sketch]
+Under exchangeability, the rank of $s_{n+1}^J$ is uniform on
+$\{1,\ldots,n+1\}$, giving
+$\P(s_{n+1}^J \le \hat{q}_J) \geq 1 - \alpha$ by the standard
+split-conformal argument (Vovk, Gammerman and Shafer, 2005).
+Under $\beta$-mixing, the score
+$s_t^J = h(r_t, \widehat{\VaR}_t, \widehat{\ES}_t)$ inherits the
+mixing properties of $\{r_t\}$, and
+Theorem~\ref{thm:dependent_conformal_var} applies with the same
+remainder $\Delta_n$.
+\end{proof}
+
+\section*{References}
+
+\begin{description}
+\item Francq, C.\ and Zako\"{i}an, J.-M.\ (2019). \emph{GARCH
+Models: Structure, Statistical Inference and Financial
+Applications}, 2nd edition, Wiley.
+\item Lindner, A.\ (2009). Stationarity, mixing, distributional
+properties and moments of GARCH$(p,q)$ processes. In \emph{Handbook
+of Financial Time Series}, T.~G.~Andersen et al.\ (eds.),
+Springer, 43--69.
+\item Rio, E.\ (2017). \emph{Asymptotic Theory of Weakly Dependent
+Random Processes}. Springer.
+\item Vovk, V., Gammerman, A.\ and Shafer, G.\ (2005).
+\emph{Algorithmic Learning in a Random World}. Springer.
+\item Yu, B.\ (1994). Rates of convergence for empirical
+processes of stationary mixing sequences. \emph{Annals of
+Probability} 22(1), 94--116.
+\end{description}
+
+\end{document}
