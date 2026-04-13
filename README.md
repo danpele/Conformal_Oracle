@@ -10,6 +10,7 @@ Pele, D.T., Lessmann, S., Hardle, W.K. (2026)
 |----------|-------------|
 | CO_full_evaluation | Main pipeline: 9 models x 24 assets, Tables 1-8, Figures 1-5 |
 | CO_baseline_comparison | Conformal vs 4 recalibration alternatives (Table 11) |
+| CO_gbm_qr | Gradient-boosted quantile regression baseline (LightGBM), Table 12 |
 | CO_simulation_study | Monte Carlo: 5 DGPs x 500 reps (Section 5.7) |
 | CO_coverage | Coverage recovery comparison (Figure 3) |
 | CO_cross_sectional | Cross-sectional q_V vs asset characteristics |
@@ -37,7 +38,7 @@ Pinned TSFM checkpoints listed in Table 2 of the paper.
 ## Requirements
 
 Python 3.10+, torch, chronos, timesfm, uni2ts,
-gluonts, arch, statsmodels, scipy, pandas, numpy
+gluonts, arch, statsmodels, scipy, pandas, numpy, lightgbm
 
 ## Citation
 
