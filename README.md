@@ -1,6 +1,6 @@
-# Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+# Recalibrating Tail Event Forecasts under Temporal Dependence
 
-**Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence**
+**Recalibrating Tail Event Forecasts under Temporal Dependence**
 
 Daniel Traian Pele, Vlad Bolovăneanu, Andrei Theodor Ginavar, Stefan Lessmann, Wolfgang Karl Härdle (2026)
 
@@ -70,8 +70,8 @@ reproducibility of that earlier work and are not part of the current manuscript.
 
 ```bibtex
 @article{pele2026conformal,
-  title   = {Distribution-Free Recalibration of Tail Quantile
-             Forecasts under Temporal Dependence},
+  title   = {Recalibrating Tail Event Forecasts
+             under Temporal Dependence},
   author  = {Pele, Daniel Traian and Bolov{\u{a}}neanu, Vlad
              and Ginavar, Andrei Theodor and Lessmann, Stefan
              and H{\"a}rdle, Wolfgang Karl},
