@@ -2,17 +2,18 @@
 
 **Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence**
 
-Daniel Traian Pele, Stefan Lessmann, Wolfgang Karl Hardle (2026)
+Daniel Traian Pele, Vlad Bolovăneanu, Andrei Theodor Ginavar, Stefan Lessmann, Wolfgang Karl Härdle (2026)
 
 A scalar conformal correction that recalibrates any black-box tail quantile
 forecast to achieve valid finite-sample coverage under beta-mixing temporal
-dependence. Applied to five time-series foundation models (Chronos, TimesFM,
-Moirai, Lag-Llama) and four parametric benchmarks (GJR-GARCH, GARCH-N,
-Historical Simulation, EWMA) across 24 financial assets at the 1% VaR level.
+dependence. Applied to six time-series foundation models (Chronos-Small,
+Chronos-Mini, TimesFM 2.5, Moirai 1.1, Moirai 2.0, Lag-Llama) and four
+parametric benchmarks (GJR-GARCH, GARCH-N, Historical Simulation, EWMA)
+across 24 financial assets at the 1% VaR level.
 
 ## Quantlets
 
-All 24 Quantlets live in the [`Quantlets/`](Quantlets/) directory with a
+All 25 Quantlets live in the [`Quantlets/`](Quantlets/) directory with a
 dedicated [README](Quantlets/README.md) covering execution order, dependencies,
 and the data flow graph.
 
@@ -20,13 +21,13 @@ and the data flow graph.
 |----------|--------|-------------|
 | CO_data_returns | cfp_ijf_data/returns/*.csv | Download 24 asset log-return series (Layer 0) |
 | CO_asset_overview | Table 1 | Asset universe (24 assets, 5 classes) |
-| CO_model_overview | Table 2 | Model overview (5 TSFMs + 4 benchmarks) |
+| CO_model_overview | Table 2 | Model overview (6 TSFMs + 4 benchmarks) |
 | CO_cross_sectional | Table 3 | Cross-sectional correlations of conformal threshold |
 | CO_full_evaluation | Table 4 | Master results (violation rates, Kupiec, Basel, QS) |
 | CO_multi_quantile_panel | Tables 5, 6, 7 | Multi-quantile, panel pooled, panel by class |
 | CO_quantile_scores | Table 8 | Diebold-Mariano p-values for quantile score |
 | CO_garch_conformal | Table 9 | Rolling vs static conformal correction |
-| CO_simulation_study | Table 10, Figure 5 | Monte Carlo validation (5 DGPs, 500 reps) |
+| CO_simulation_study | Table 10 | Monte Carlo validation (5 DGPs, 500 reps) |
 | CO_bound_validation | Table 11 | Coverage bound evaluation (Theorem 3.5) |
 | CO_gbm_qr | Table 12 row | GBM-QR baseline (LightGBM quantile regression) |
 | CO_gamlss | Table 12 row | GAMLSS-SST baseline (skewed-t location-scale) |
@@ -36,9 +37,10 @@ and the data flow graph.
 | CFP_ES_Correction_Z2 | Table C.14 | ES correction and Acerbi-Szekely Z2 backtest |
 | CO_robustness | Tables D.15-D.18 | Robustness: WCP, calibration fraction, Monte Carlo |
 | CO_rolling_qV | Figure 1 | Rolling conformal threshold on S&P 500 |
-| CO_heatmap | Figure 2 | Basel Traffic Light heatmap (9 models x 24 assets) |
+| CO_heatmap | Figure 2 | Basel Traffic Light heatmap (10 models x 24 assets) |
 | CFP_Calibration_Efficiency_Frontier | Figure 3 | Calibration-efficiency frontier |
 | CO_violation_rates | Figure 4 | Raw vs corrected violation rates |
+| CO_qV_ranking | Figure 5 | Conformal correction magnitude ranking (10 models) |
 | CO_covid_response_lag | Figure 6 | COVID-19 response lag |
 | CO_drift_diagnostic | Figure 7 | Distributional drift diagnostic (TV distance) |
 | CFP_Capital_Charge | Figure 8 | Cumulative capital charge comparison |
@@ -70,7 +72,8 @@ reproducibility of that earlier work and are not part of the current manuscript.
 @article{pele2026conformal,
   title   = {Distribution-Free Recalibration of Tail Quantile
              Forecasts under Temporal Dependence},
-  author  = {Pele, Daniel Traian and Lessmann, Stefan
+  author  = {Pele, Daniel Traian and Bolov{\u{a}}neanu, Vlad
+             and Ginavar, Andrei Theodor and Lessmann, Stefan
              and H{\"a}rdle, Wolfgang Karl},
   journal = {Working Paper},
   year    = {2026}
