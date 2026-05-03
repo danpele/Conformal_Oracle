@@ -2,25 +2,34 @@
 *.aux
 *.bbl
 *.blg
+*.fdb_latexmk
+*.fls
 *.log
+*.nav
 *.out
+*.snm
 *.spl
 *.synctex.gz
+*.toc
 *.pdf
 
 # Python
 __pycache__/
 *.pyc
 .venv*/
+.ipynb_checkpoints/
+test_env/
 
 # OS
 .DS_Store
 
-# Data (large)
-cfp_ijf_data/
+# Data (large — parquets excluded, returns tracked)
+cfp_ijf_data/*
+!cfp_ijf_data/returns/
 gpt3.5_simulations/
 gpt4_simulations/
 gpt_4o_simulations/
+legacy/
 Assets\ data/
 lag-llama/
 robustness_output/
