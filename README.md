@@ -11,6 +11,37 @@ Chronos-Mini, TimesFM 2.5, Moirai 1.1, Moirai 2.0, Lag-Llama) and four
 parametric benchmarks (GJR-GARCH, GARCH-N, Historical Simulation, EWMA)
 across 24 financial assets at the 1% VaR level.
 
+## Repository structure
+
+This repository accompanies Pele et al. (2026). The [`Quantlets/`](Quantlets/)
+directory contains the open-science scripts that produce every figure and table
+in the paper. The [`python/`](python/) directory contains a standalone Python
+package, `conformal-oracle`, that implements the conformal recalibration audit
+framework for user-supplied probabilistic forecasters.
+
+```
+Conformal_Oracle/
+├── Quantlets/           # R/Python scripts reproducing all paper outputs
+├── python/              # conformal-oracle Python package (v0.1.0)
+│   ├── pyproject.toml
+│   ├── README.md        # package quickstart
+│   ├── src/conformal_oracle/
+│   ├── tests/
+│   ├── examples/
+│   └── docs/
+├── cfp_ijf_data/        # canonical data (returns, forecasts)
+├── pipeline/            # build pipeline (make.sh targets)
+└── legacy/              # predecessor paper analyses
+```
+
+### Installing the Python package
+
+```bash
+cd python/
+pip install -e ".[dev]"
+pytest                   # 79 tests, ~2 min
+```
+
 ## Quantlets
 
 All 25 Quantlets live in the [`Quantlets/`](Quantlets/) directory with a
