@@ -44,6 +44,7 @@ chronos = [
 ]
 timesfm = [
     "timesfm>=1.2",
+    "torch>=2.0",
 ]
 moirai = [
     "uni2ts>=0.1",
@@ -75,6 +76,7 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--tb=short -q"
+pythonpath = ["."]
 
 [tool.ruff]
 target-version = "py310"

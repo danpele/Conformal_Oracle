@@ -69,6 +69,15 @@ class LagLlamaForecaster(BaseTSFMForecaster):
 
         import torch
 
+        # PyTorch 2.6+ defaults to weights_only=True; the Lag-Llama
+        # checkpoint contains gluonts distribution classes that must
+        # be allowlisted for safe deserialization.
+        try:
+            from gluonts.torch.distributions.studentT import StudentTOutput
+            torch.serialization.add_safe_globals([StudentTOutput])
+        except (ImportError, AttributeError):
+            pass
+
         device_str = self._resolve_device()
         device = torch.device(device_str)
 
