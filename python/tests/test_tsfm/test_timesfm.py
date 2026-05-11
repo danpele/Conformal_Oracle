@@ -19,13 +19,20 @@ from conformal_oracle.forecasters.tsfm.timesfm import (
 )
 
 
-def _timesfm_available() -> bool:
-    return importlib.util.find_spec("timesfm") is not None
+def _timesfm_25_available() -> bool:
+    if importlib.util.find_spec("timesfm") is None:
+        return False
+    try:
+        from timesfm import ForecastConfig  # noqa: F401
+
+        return True
+    except ImportError:
+        return False
 
 
 pytestmark = pytest.mark.skipif(
-    not _timesfm_available(),
-    reason="timesfm not installed",
+    not _timesfm_25_available(),
+    reason="timesfm 2.5 API not available (ForecastConfig missing)",
 )
 
 

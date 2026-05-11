@@ -55,11 +55,19 @@ class TimesFM25Forecaster(BaseTSFMForecaster):
 
         try:
             import timesfm
-            from timesfm import ForecastConfig
         except ImportError as e:
             raise ImportError(
                 "timesfm is not installed. Install with: "
                 "pip install conformal-oracle[timesfm]"
+            ) from e
+
+        try:
+            from timesfm import ForecastConfig
+        except ImportError as e:
+            raise ImportError(
+                "timesfm is installed but lacks the 2.5 API "
+                "(ForecastConfig not found). Install from GitHub: "
+                "pip install git+https://github.com/google-research/timesfm.git"
             ) from e
 
         self._model = timesfm.TimesFM_2p5_200M_torch.from_pretrained(

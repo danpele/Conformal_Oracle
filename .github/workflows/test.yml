@@ -114,6 +114,7 @@ jobs:
           cd python
           pip install torch>=2.0 --index-url https://download.pytorch.org/whl/cpu
           pip install -e ".[dev,timesfm]"
+          pip install git+https://github.com/google-research/timesfm.git
       - name: Test
         run: |
           cd python
@@ -170,6 +171,7 @@ jobs:
           pip install torch>=2.0 --index-url https://download.pytorch.org/whl/cpu
           pip install -e ".[dev,tsfm_all]"
           pip install git+https://github.com/time-series-foundation-models/lag-llama.git
+          pip install git+https://github.com/google-research/timesfm.git
       - name: Run full replication
         run: |
           cd python

@@ -69,15 +69,6 @@ class LagLlamaForecaster(BaseTSFMForecaster):
 
         import torch
 
-        # PyTorch 2.6+ defaults to weights_only=True; the Lag-Llama
-        # checkpoint contains gluonts distribution classes that must
-        # be allowlisted for safe deserialization.
-        try:
-            from gluonts.torch.distributions.studentT import StudentTOutput
-            torch.serialization.add_safe_globals([StudentTOutput])
-        except (ImportError, AttributeError):
-            pass
-
         device_str = self._resolve_device()
         device = torch.device(device_str)
 
@@ -86,25 +77,39 @@ class LagLlamaForecaster(BaseTSFMForecaster):
             kwargs["revision"] = self.model_revision
         ckpt = hf_hub_download(**kwargs)
 
-        rope_factor = max(1.0, self.context_length / 32)
-        estimator = LagLlamaEstimator(
-            prediction_length=1,
-            context_length=self.context_length,
-            input_size=1,
-            n_layer=8,
-            n_embd_per_head=36,
-            n_head=4,
-            num_parallel_samples=self.n_samples,
-            batch_size=1,
-            device=device,
-            rope_scaling={"type": "linear", "factor": rope_factor},
-            ckpt_path=ckpt,
-            time_feat=True,
+        # PyTorch 2.6+ defaults to weights_only=True; the Lag-Llama
+        # checkpoint contains gluonts distribution and loss classes
+        # that aren't in the safe globals whitelist. Temporarily
+        # override torch.load to allow full deserialization of this
+        # trusted HuggingFace checkpoint.
+        _orig_load = torch.load
+        torch.load = lambda *a, **kw: _orig_load(
+            *a, **{**kw, "weights_only": False}
         )
+        try:
+            rope_factor = max(1.0, self.context_length / 32)
+            estimator = LagLlamaEstimator(
+                prediction_length=1,
+                context_length=self.context_length,
+                input_size=1,
+                n_layer=8,
+                n_embd_per_head=36,
+                n_head=4,
+                num_parallel_samples=self.n_samples,
+                batch_size=1,
+                device=device,
+                rope_scaling={"type": "linear", "factor": rope_factor},
+                ckpt_path=ckpt,
+                time_feat=True,
+            )
 
-        transformation = estimator.create_transformation()
-        module = estimator.create_lightning_module()
-        self._predictor = estimator.create_predictor(transformation, module)
+            transformation = estimator.create_transformation()
+            module = estimator.create_lightning_module()
+            self._predictor = estimator.create_predictor(
+                transformation, module
+            )
+        finally:
+            torch.load = _orig_load
 
         self._cache_obj = TSFMPredictionCache(
             cache_dir=self.cache_dir,
