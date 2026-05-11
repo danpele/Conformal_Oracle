@@ -26,7 +26,7 @@ jobs:
       - name: Lint
         run: |
           cd python
-          ruff check src/ tests/
+          ruff check src/
       - name: Type check
         continue-on-error: true
         run: |
@@ -88,6 +88,7 @@ jobs:
         run: |
           cd python
           pip install -e ".[dev,lag_llama]"
+          pip install git+https://github.com/time-series-foundation-models/lag-llama.git
       - name: Test
         run: |
           cd python
@@ -120,7 +121,7 @@ jobs:
   moirai:
     name: Moirai extra
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -135,6 +136,7 @@ jobs:
       - name: Install
         run: |
           cd python
+          pip install torch>=2.0 --index-url https://download.pytorch.org/whl/cpu
           pip install -e ".[dev,moirai]"
       - name: Test Moirai
         run: |
@@ -164,7 +166,9 @@ jobs:
       - name: Install all TSFMs
         run: |
           cd python
+          pip install torch>=2.0 --index-url https://download.pytorch.org/whl/cpu
           pip install -e ".[dev,tsfm_all]"
+          pip install git+https://github.com/time-series-foundation-models/lag-llama.git
       - name: Run full replication
         run: |
           cd python

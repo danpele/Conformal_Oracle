@@ -43,31 +43,30 @@ chronos = [
     "transformers>=4.30",
 ]
 timesfm = [
-    "timesfm>=2.5",
-    "jax>=0.4",
-    "jaxlib>=0.4",
+    "timesfm>=1.2",
 ]
 moirai = [
-    "uni2ts>=1.2",
+    "uni2ts>=0.1",
     "torch>=2.0",
-    "lightning>=2.0",
+    "einops>=0.6",
+    "gluonts>=0.14",
+    "huggingface-hub>=0.20",
 ]
 lag_llama = [
-    "lag-llama>=0.1",
     "torch>=2.0",
+    "gluonts>=0.14",
     "huggingface-hub>=0.20",
+    "einops>=0.6",
 ]
 tsfm_all = [
     "chronos-forecasting>=1.5",
-    "timesfm>=2.5",
-    "uni2ts>=1.2",
-    "lag-llama>=0.1",
+    "timesfm>=1.2",
+    "uni2ts>=0.1",
     "torch>=2.0",
     "transformers>=4.30",
-    "jax>=0.4",
-    "jaxlib>=0.4",
-    "lightning>=2.0",
+    "gluonts>=0.14",
     "huggingface-hub>=0.20",
+    "einops>=0.6",
 ]
 
 [tool.setuptools.packages.find]
