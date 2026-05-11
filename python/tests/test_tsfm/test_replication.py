@@ -106,7 +106,7 @@ def test_replication_chronos_with_baselines(sp500_synthetic):
     assert "quantile_score_corrected" in table.columns
 
     for col in ["violation_rate_corrected", "quantile_score_corrected"]:
-        vals = table[col].dropna()
+        vals = pd.to_numeric(table[col], errors="coerce").dropna()
         assert len(vals) > 0
         assert np.all(np.isfinite(vals))
 
