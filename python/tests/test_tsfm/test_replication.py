@@ -103,9 +103,9 @@ def test_replication_chronos_with_baselines(sp500_synthetic):
 
     assert len(table) >= 14
     assert "violation_rate_corrected" in table.columns
-    assert "quantile_score" in table.columns
+    assert "quantile_score_corrected" in table.columns
 
-    for col in ["violation_rate_corrected", "quantile_score"]:
+    for col in ["violation_rate_corrected", "quantile_score_corrected"]:
         vals = table[col].dropna()
         assert len(vals) > 0
         assert np.all(np.isfinite(vals))
