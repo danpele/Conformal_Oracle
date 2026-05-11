@@ -116,15 +116,32 @@ class QuantileGridDistribution:
 
     def _fit_parametric(self, method: str) -> tuple[float, ...]:
         if method == "student_t":
-            df, loc, scale = stats.t.fit(
-                self.quantiles,
-                floc=float(np.median(self.quantiles)),
-            )
-            return (df, loc, scale)
+            return self._fit_student_t_quantile()
         else:
             loc = float(np.mean(self.quantiles))
             scale = float(np.std(self.quantiles))
             return (loc, scale)
+
+    def _fit_student_t_quantile(self) -> tuple[float, float, float]:
+        from scipy.optimize import minimize as _minimize
+
+        levels = self.levels
+        qvals = self.quantiles
+
+        def residuals(params: np.ndarray) -> float:
+            nu, mu, sigma = params
+            if nu <= 2 or sigma <= 0:
+                return 1e10
+            predicted = mu + sigma * stats.t.ppf(levels, nu)
+            return float(np.sum((predicted - qvals) ** 2))
+
+        x0 = [8.0, float(np.median(qvals)), max(float(np.std(qvals)), 1e-8)]
+        res = _minimize(residuals, x0, method="Nelder-Mead",
+                        options={"maxiter": 2000, "xatol": 1e-8})
+        nu, mu, sigma = res.x
+        nu = max(nu, 2.01)
+        sigma = max(sigma, 1e-8)
+        return (nu, mu, sigma)
 
     def _es_linear(self, alpha: float) -> float:
         q = self.quantile(alpha, completion="linear")

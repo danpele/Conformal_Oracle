@@ -37,6 +37,38 @@ dev = [
     "ruff>=0.1",
     "mypy>=1.5",
 ]
+chronos = [
+    "chronos-forecasting>=1.5",
+    "torch>=2.0",
+    "transformers>=4.30",
+]
+timesfm = [
+    "timesfm>=2.5",
+    "jax>=0.4",
+    "jaxlib>=0.4",
+]
+moirai = [
+    "uni2ts>=1.2",
+    "torch>=2.0",
+    "lightning>=2.0",
+]
+lag_llama = [
+    "lag-llama>=0.1",
+    "torch>=2.0",
+    "huggingface-hub>=0.20",
+]
+tsfm_all = [
+    "chronos-forecasting>=1.5",
+    "timesfm>=2.5",
+    "uni2ts>=1.2",
+    "lag-llama>=0.1",
+    "torch>=2.0",
+    "transformers>=4.30",
+    "jax>=0.4",
+    "jaxlib>=0.4",
+    "lightning>=2.0",
+    "huggingface-hub>=0.20",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]

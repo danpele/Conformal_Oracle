@@ -9,3 +9,38 @@ __all__ = [
     "GARCHNormalForecaster",
     "HistoricalSimulationForecaster",
 ]
+
+try:
+    from conformal_oracle.forecasters.tsfm import BaseTSFMForecaster
+
+    __all__ += ["BaseTSFMForecaster"]
+except ImportError:
+    pass
+
+try:
+    from conformal_oracle.forecasters.tsfm.chronos import ChronosForecaster
+
+    __all__ += ["ChronosForecaster"]
+except ImportError:
+    pass
+
+try:
+    from conformal_oracle.forecasters.tsfm.lag_llama import LagLlamaForecaster
+
+    __all__ += ["LagLlamaForecaster"]
+except ImportError:
+    pass
+
+try:
+    from conformal_oracle.forecasters.tsfm.timesfm import TimesFM25Forecaster
+
+    __all__ += ["TimesFM25Forecaster"]
+except ImportError:
+    pass
+
+try:
+    from conformal_oracle.forecasters.tsfm.moirai import MoiraiForecaster
+
+    __all__ += ["MoiraiForecaster"]
+except ImportError:
+    pass
