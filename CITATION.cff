@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+title: "Recalibrating Tail Risk Forecasts under Temporal Dependence"
+message: "If you use this software or the methodology it implements, please cite the underlying paper."
+type: software
+authors:
+  - family-names: Pele
+    given-names: Daniel Traian
+    affiliation: "Bucharest University of Economic Studies, Institute for Digital Assets"
+  - family-names: Bolovaneanu
+    given-names: V.
+    affiliation: "Bucharest University of Economic Studies"
+  - family-names: Ginavar
+    given-names: A.T.
+    affiliation: "Bucharest University of Economic Studies"
+  - family-names: Lessmann
+    given-names: Stefan
+    affiliation: "Humboldt University Berlin"
+  - family-names: "Härdle"
+    given-names: Wolfgang Karl
+    affiliation: "Humboldt University Berlin, Institute for Digital Assets"
+repository-code: "https://github.com/QuantLet/Conformal_Oracle"
+url: "https://github.com/QuantLet/Conformal_Oracle"
+license: MIT
+preferred-citation:
+  type: article
+  title: "Recalibrating Tail Risk Forecasts under Temporal Dependence"
+  authors:
+    - family-names: Pele
+      given-names: Daniel Traian
+      affiliation: "Bucharest University of Economic Studies, Institute for Digital Assets"
+    - family-names: Bolovaneanu
+      given-names: V.
+      affiliation: "Bucharest University of Economic Studies"
+    - family-names: Ginavar
+      given-names: A.T.
+      affiliation: "Bucharest University of Economic Studies"
+    - family-names: Lessmann
+      given-names: Stefan
+      affiliation: "Humboldt University Berlin"
+    - family-names: "Härdle"
+      given-names: Wolfgang Karl
+      affiliation: "Humboldt University Berlin, Institute for Digital Assets"
+  year: 2026
+  url: "https://github.com/QuantLet/Conformal_Oracle"
+  notes: "Manuscript under review at International Journal of Forecasting."

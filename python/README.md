@@ -15,6 +15,22 @@ Implements the methodology from:
 ## Install
 
 ```bash
+pip install conformal-oracle
+```
+
+For TSFM wrappers:
+
+```bash
+pip install conformal-oracle[chronos]    # Chronos
+pip install conformal-oracle[lag_llama]  # Lag-Llama
+pip install conformal-oracle[tsfm_all]   # all four TSFMs
+```
+
+For development:
+
+```bash
+git clone https://github.com/QuantLet/Conformal_Oracle.git
+cd Conformal_Oracle/python
 pip install -e ".[dev]"
 ```
 
@@ -68,6 +84,11 @@ result = audit_static(returns, MyForecaster(), alpha=0.01)
 ```
 
 See `examples/04_custom_forecaster.py` for a full example.
+
+## Worked examples
+
+- [Reproduce Table 1 (S&P 500)](examples/notebooks/reproduce_table_1_sp500.ipynb) —
+  GJR-GARCH and Lag-Llama audits with conformal correction on real data.
 
 ## Documentation
 
