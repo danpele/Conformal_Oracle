@@ -89,6 +89,7 @@ See `examples/04_custom_forecaster.py` for a full example.
 
 - [Reproduce Table 1 (S&P 500)](examples/notebooks/reproduce_table_1_sp500.ipynb) —
   GJR-GARCH and Lag-Llama audits with conformal correction on real data.
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danpele/Conformal_Oracle/blob/main/python/examples/notebooks/reproduce_table_1_sp500.ipynb)
 
 ## Documentation
 
