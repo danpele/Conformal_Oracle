@@ -4,8 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "conformal-oracle"
-version = "0.2.1"
+version = "0.2.2"
 description = "Conformal recalibration audit for tail quantile forecasters"
+readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
@@ -21,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Mathematics",
 ]
+
 dependencies = [
     "numpy>=1.24",
     "pandas>=2.0",
@@ -29,6 +31,11 @@ dependencies = [
     "arch>=6.0",
     "matplotlib>=3.7",
 ]
+
+[project.urls]
+Homepage = "https://github.com/QuantLet/Conformal_Oracle"
+Repository = "https://github.com/danpele/Conformal_Oracle"
+Issues = "https://github.com/danpele/Conformal_Oracle/issues"
 
 [project.optional-dependencies]
 dev = [
