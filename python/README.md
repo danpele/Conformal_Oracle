@@ -51,6 +51,11 @@ q_lo = pd.read_csv("my_var_forecast.csv", index_col=0, parse_dates=True).squeeze
 
 result = audit(returns, forecast=q_lo, alpha=0.01, mode="static")
 print(result.summary())
+
+# Rolling mode: re-estimates the conformal correction in an
+# expanding window (more realistic for live deployment)
+result_roll = audit(returns, forecast=q_lo, alpha=0.01, mode="rolling")
+print(result_roll.summary())
 ```
 
 No `arch`, no `torch`, no heavyweight dependency -- just your
