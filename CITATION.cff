@@ -2,6 +2,8 @@ cff-version: 1.2.0
 title: "Recalibrating Tail Risk Forecasts under Temporal Dependence"
 message: "If you use this software or the methodology it implements, please cite the underlying paper."
 type: software
+version: 0.3.0
+date-released: "2026-05-12"
 authors:
   - family-names: Pele
     given-names: Daniel Traian

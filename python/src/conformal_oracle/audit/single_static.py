@@ -113,6 +113,100 @@ class StaticAuditResult:
         )
 
 
+def _audit_static_from_quantiles(
+    returns: pd.Series,
+    q_lo: pd.Series,
+    alpha: float = 0.01,
+    calibration_split: float = 0.70,
+    seed: int = 2026,
+) -> StaticAuditResult:
+    """Static audit from a pre-computed quantile path.
+
+    Parameters
+    ----------
+    q_lo : pd.Series
+        The predicted lower-alpha quantile for each observation,
+        aligned to ``returns`` by index. Values should be on the
+        same scale as returns (decimal log-returns, negative = loss).
+    """
+    common = returns.index.intersection(q_lo.index)
+    if len(common) == 0:
+        raise ValueError(
+            "returns and forecast (q_lo) share no common index values"
+        )
+    returns = returns.loc[common]
+    q_lo = q_lo.loc[common]
+
+    n = len(returns)
+    n_cal = int(n * calibration_split)
+    n_test = n - n_cal
+
+    cal_returns = returns.iloc[:n_cal].values
+    cal_q_lo = q_lo.iloc[:n_cal].values
+    test_returns = returns.iloc[n_cal:].values
+    test_q_lo = q_lo.iloc[n_cal:].values
+
+    # Scores: S_t = q_lo_t - r_t  (same sign convention as forecaster path)
+    cal_scores = cal_q_lo - cal_returns
+    q_v_stat = float(np.quantile(cal_scores, 1 - alpha))
+
+    ci = bootstrap_qv_ci(cal_scores, alpha, seed=seed)
+
+    # VaR is stored as positive loss threshold: VaR = -q_lo
+    var_raw = -test_q_lo
+
+    var_corrected = var_raw + q_v_stat
+
+    # ES is not available from a quantile-only path
+    es_raw = np.full_like(var_raw, np.nan)
+    es_corrected = np.full_like(var_corrected, np.nan)
+
+    viol_raw = (test_returns < -var_raw).astype(int)
+    viol_corrected = (test_returns < -var_corrected).astype(int)
+
+    regime, ratio = classify_regime_static(q_v_stat, -var_raw)
+
+    chris_raw = christoffersen_pvalue(viol_raw, alpha)
+    chris_corr = christoffersen_pvalue(viol_corrected, alpha)
+
+    test_index = returns.index[n_cal:]
+    var_corrected_series = pd.Series(
+        var_corrected, index=test_index, name="VaR_corrected"
+    )
+
+    return StaticAuditResult(
+        regime=regime,
+        replacement_ratio=ratio,
+        q_v_stat=q_v_stat,
+        q_v_stat_ci=ci,
+        var_corrected=var_corrected_series,
+        violation_rate_raw=float(np.mean(viol_raw)),
+        violation_rate_corrected=float(np.mean(viol_corrected)),
+        basel_zone_raw=basel_traffic_light(viol_raw),
+        basel_zone_corrected=basel_traffic_light(viol_corrected),
+        kupiec_pvalue_raw=kupiec_pof_pvalue(viol_raw, alpha),
+        kupiec_pvalue_corrected=kupiec_pof_pvalue(viol_corrected, alpha),
+        christoffersen_pvalue_raw=chris_raw["joint"],
+        christoffersen_pvalue_corrected=chris_corr["joint"],
+        z2_statistic_raw=float("nan"),
+        z2_statistic_corrected=float("nan"),
+        quantile_score_raw=quantile_score(test_returns, -var_raw, alpha),
+        quantile_score_corrected=quantile_score(
+            test_returns, -var_corrected, alpha
+        ),
+        fz_score_raw=float("nan"),
+        fz_score_corrected=float("nan"),
+        qs_sequence_raw=quantile_score_sequence(test_returns, -var_raw, alpha),
+        qs_sequence_corrected=quantile_score_sequence(
+            test_returns, -var_corrected, alpha
+        ),
+        alpha=alpha,
+        calibration_split=calibration_split,
+        n_calibration=n_cal,
+        n_test=n_test,
+    )
+
+
 def audit_static(
     returns: pd.Series,
     forecaster: Forecaster,

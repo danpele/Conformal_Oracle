@@ -2,28 +2,28 @@
 
 Conformal recalibration audit for tail quantile forecasters.
 
-Given any black-box probabilistic forecaster and a return series,
-`conformal-oracle` computes a one-parameter conformal correction
-(static or rolling), classifies the forecaster as signal-preserving
-or replacement, and reports a full backtest panel.
+Given any return series and either a forecaster object or a
+pre-computed quantile path, `conformal-oracle` computes a
+one-parameter conformal correction (static or rolling), classifies
+the forecast as signal-preserving or replacement, and reports a
+full backtest panel.
+
+The core install is **dependency-agnostic**: it needs only NumPy,
+pandas, SciPy, statsmodels, and matplotlib. No forecaster library
+is required unless you use the built-in benchmark wrappers.
 
 Implements the methodology from:
 
-> Pele, D.T., Bolovăneanu, V., Ginavar, A.T., Lessmann, S., Härdle, W.K.
+> Pele, D.T., Bolovaneanu, V., Ginavar, A.T., Lessmann, S., Hardle, W.K.
 > "Recalibrating Tail Event Forecasts under Temporal Dependence" (2026).
 
 ## Install
 
 ```bash
-pip install conformal-oracle
-```
-
-For TSFM wrappers:
-
-```bash
-pip install conformal-oracle[chronos]    # Chronos
-pip install conformal-oracle[lag_llama]  # Lag-Llama
-pip install conformal-oracle[tsfm_all]   # all four TSFMs
+pip install conformal-oracle                 # core (no arch dep)
+pip install conformal-oracle[benchmarks]     # + GJR-GARCH, GARCH-Normal
+pip install conformal-oracle[chronos]        # + Chronos TSFM
+pip install conformal-oracle[all]            # everything
 ```
 
 For development:
@@ -31,40 +31,59 @@ For development:
 ```bash
 git clone https://github.com/QuantLet/Conformal_Oracle.git
 cd Conformal_Oracle/python
-pip install -e ".[dev]"
+pip install -e ".[dev,benchmarks]"
 ```
 
-## Quickstart — static audit
+## Quickstart -- agnostic audit (no forecaster dependency)
 
 ```python
 import pandas as pd
-from conformal_oracle import audit_static
-from conformal_oracle.forecasters import GJRGARCHForecaster
+from conformal_oracle import audit
 
 returns = pd.read_csv("returns.csv", index_col=0, parse_dates=True).squeeze()
-result = audit_static(returns, GJRGARCHForecaster(), alpha=0.01)
+# q_lo: your model's predicted 1% quantile, same index as returns
+q_lo = pd.read_csv("my_var_forecast.csv", index_col=0, parse_dates=True).squeeze()
+
+result = audit(returns, forecast=q_lo, alpha=0.01, mode="static")
 print(result.summary())
 ```
 
-## Quickstart — rolling audit
+No `arch`, no `torch`, no heavyweight dependency -- just your
+quantile series.
+
+## Quickstart -- with a forecaster object
 
 ```python
-from conformal_oracle import audit_rolling
-from conformal_oracle.forecasters import GJRGARCHForecaster
+from conformal_oracle import audit
+from conformal_oracle.contrib.benchmarks import GJRGARCHForecaster
 
-result = audit_rolling(returns, GJRGARCHForecaster(), alpha=0.01, window=250)
+result = audit(returns, GJRGARCHForecaster(), alpha=0.01, mode="rolling")
 print(result.summary())
 ```
 
-## Quickstart — benchmark comparison
+## Regime classification
 
 ```python
-from conformal_oracle import audit_with_benchmarks
+from conformal_oracle import classify_regime
 
-comp = audit_with_benchmarks(returns, my_forecaster, benchmarks=["gjr_garch", "hist_sim"])
+verdict = classify_regime(returns, forecast=q_lo, mode="rolling")
+print(verdict.regime)       # "signal-preserving" or "replacement"
+print(verdict.R)            # replacement ratio
+print(verdict.basel_zone)   # "green", "yellow", or "red"
+```
+
+## Compare multiple forecasters
+
+```python
+from conformal_oracle import compare_forecasters
+
+comp = compare_forecasters(
+    returns,
+    {"model_A": q_lo_A, "model_B": q_lo_B},
+    mode="rolling",
+)
 print(comp.comparison_table())
-print(comp.diebold_mariano(baseline="gjr_garch"))
-print(comp.comparison_table_latex())
+print(comp.dm_matrix())
 ```
 
 ## Custom forecaster
@@ -80,18 +99,16 @@ class MyForecaster:
         hist = returns.iloc[max(0, t-250):t]
         return SampleDistribution(samples=hist.values)
 
-result = audit_static(returns, MyForecaster(), alpha=0.01)
+result = audit(returns, MyForecaster(), alpha=0.01)
 ```
-
-See `examples/04_custom_forecaster.py` for a full example.
 
 ## Worked examples
 
-- [Quickstart (S&P 500)](examples/notebooks/quickstart_sp500.ipynb) —
+- [Quickstart (S&P 500)](examples/notebooks/quickstart_sp500.ipynb) --
   Static and rolling conformal audits with GJR-GARCH and Lag-Llama.
   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danpele/Conformal_Oracle/blob/main/python/examples/notebooks/quickstart_sp500.ipynb)
-- [Reproduce Table 4 (Full replication)](examples/notebooks/reproduce_table4_full.ipynb) —
-  9 forecasters × 24 assets, full master evaluation table with checkpointing.
+- [Reproduce Table 4 (Full replication)](examples/notebooks/reproduce_table4_full.ipynb) --
+  9 forecasters x 24 assets, full master evaluation table with checkpointing.
   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danpele/Conformal_Oracle/blob/main/python/examples/notebooks/reproduce_table4_full.ipynb)
 
 ## Documentation
@@ -99,10 +116,14 @@ See `examples/04_custom_forecaster.py` for a full example.
 - [API Reference](docs/api.md)
 - [Methodology](docs/methodology.md)
 - [Conventions](docs/conventions.md) (return units, VaR sign, alpha)
+- [Migration Guide (v0.3)](docs/migration_v0.3.md)
 
 ## Requirements
 
-Python 3.10+, numpy, pandas, scipy, statsmodels, arch, matplotlib.
+Python 3.10+, numpy, pandas, scipy, statsmodels, matplotlib.
+
+GARCH benchmarks require `arch>=6.0` (install with `[benchmarks]`).
+TSFM wrappers require PyTorch and model-specific packages (see extras).
 
 ## License
 

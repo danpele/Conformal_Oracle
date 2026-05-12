@@ -1,46 +1,57 @@
-"""Reference forecasters (GJR-GARCH, GARCH-Normal, Historical Simulation)."""
+"""Reference forecasters — compatibility shim.
 
-from conformal_oracle.forecasters.garch_normal import GARCHNormalForecaster
-from conformal_oracle.forecasters.gjr_garch import GJRGARCHForecaster
-from conformal_oracle.forecasters.hist_sim import HistoricalSimulationForecaster
+.. deprecated:: 0.3.0
+    Import from ``conformal_oracle.contrib.benchmarks`` or
+    ``conformal_oracle.contrib.tsfm`` instead.
+"""
 
+from __future__ import annotations
+
+import warnings as _warnings
+
+
+def __getattr__(name: str) -> object:
+    _BENCHMARKS = {
+        "GJRGARCHForecaster",
+        "GARCHNormalForecaster",
+        "HistoricalSimulationForecaster",
+    }
+    _TSFM = {
+        "BaseTSFMForecaster",
+        "ChronosForecaster",
+        "LagLlamaForecaster",
+        "TimesFM25Forecaster",
+        "MoiraiForecaster",
+    }
+    if name in _BENCHMARKS:
+        _warnings.warn(
+            f"Importing {name} from conformal_oracle.forecasters is "
+            f"deprecated since v0.3.0. Use "
+            f"conformal_oracle.contrib.benchmarks instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        from conformal_oracle.contrib import benchmarks
+
+        return getattr(benchmarks, name)
+    if name in _TSFM:
+        _warnings.warn(
+            f"Importing {name} from conformal_oracle.forecasters is "
+            f"deprecated since v0.3.0. Use "
+            f"conformal_oracle.contrib.tsfm instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        from conformal_oracle.contrib import tsfm
+
+        return getattr(tsfm, name)
+    raise AttributeError(f"module 'conformal_oracle.forecasters' has no attribute {name!r}")
+
+
+# Eagerly populate __all__ so `from conformal_oracle.forecasters import *`
+# still works (with deprecation warnings emitted on actual use).
 __all__ = [
     "GJRGARCHForecaster",
     "GARCHNormalForecaster",
     "HistoricalSimulationForecaster",
 ]
-
-try:
-    from conformal_oracle.forecasters.tsfm import BaseTSFMForecaster
-
-    __all__ += ["BaseTSFMForecaster"]
-except ImportError:
-    pass
-
-try:
-    from conformal_oracle.forecasters.tsfm.chronos import ChronosForecaster
-
-    __all__ += ["ChronosForecaster"]
-except ImportError:
-    pass
-
-try:
-    from conformal_oracle.forecasters.tsfm.lag_llama import LagLlamaForecaster
-
-    __all__ += ["LagLlamaForecaster"]
-except ImportError:
-    pass
-
-try:
-    from conformal_oracle.forecasters.tsfm.timesfm import TimesFM25Forecaster
-
-    __all__ += ["TimesFM25Forecaster"]
-except ImportError:
-    pass
-
-try:
-    from conformal_oracle.forecasters.tsfm.moirai import MoiraiForecaster
-
-    __all__ += ["MoiraiForecaster"]
-except ImportError:
-    pass

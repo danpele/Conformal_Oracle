@@ -11,18 +11,22 @@ from conformal_oracle._protocols import Forecaster
 from conformal_oracle.audit.single_rolling import RollingAuditResult, audit_rolling
 from conformal_oracle.audit.single_static import StaticAuditResult, audit_static
 from conformal_oracle.diagnostics.diebold_mariano import diebold_mariano_pvalue
-from conformal_oracle.forecasters import (
-    GARCHNormalForecaster,
-    GJRGARCHForecaster,
-    HistoricalSimulationForecaster,
-)
 from conformal_oracle.reporting.latex import comparison_to_latex
 
-_BENCHMARK_REGISTRY: dict[str, type] = {
-    "gjr_garch": GJRGARCHForecaster,
-    "garch_normal": GARCHNormalForecaster,
-    "hist_sim": HistoricalSimulationForecaster,
-}
+
+def _get_benchmark_registry() -> dict[str, type]:
+    """Lazily import benchmark forecasters to avoid top-level arch dep."""
+    from conformal_oracle.contrib.benchmarks import (
+        GARCHNormalForecaster,
+        GJRGARCHForecaster,
+        HistoricalSimulationForecaster,
+    )
+
+    return {
+        "gjr_garch": GJRGARCHForecaster,
+        "garch_normal": GARCHNormalForecaster,
+        "hist_sim": HistoricalSimulationForecaster,
+    }
 
 
 @dataclass
@@ -94,14 +98,16 @@ def audit_with_benchmarks(
             When provided, each (base_forecaster, recalibration) combination
             is audited. Default (None) uses the conformal shift only.
     """
+    registry = _get_benchmark_registry()
+
     if benchmarks is None:
         benchmarks = ["gjr_garch", "hist_sim"]
 
     for name in benchmarks:
-        if name not in _BENCHMARK_REGISTRY:
+        if name not in registry:
             raise ValueError(
                 f"Unknown benchmark '{name}'. "
-                f"Available: {list(_BENCHMARK_REGISTRY.keys())}"
+                f"Available: {list(registry.keys())}"
             )
 
     audit_fn = audit_static if mode == "static" else audit_rolling
@@ -112,7 +118,7 @@ def audit_with_benchmarks(
         )
         bench_results: dict[str, Union[StaticAuditResult, RollingAuditResult]] = {}
         for name in benchmarks:
-            bench_fc = _BENCHMARK_REGISTRY[name]()
+            bench_fc = registry[name]()
             bench_results[name] = audit_fn(
                 returns, bench_fc, alpha=alpha, seed=seed, **mode_kwargs,
             )
@@ -124,7 +130,7 @@ def audit_with_benchmarks(
 
         all_forecasters: dict[str, Forecaster] = {"user": forecaster}
         for name in benchmarks:
-            all_forecasters[name] = _BENCHMARK_REGISTRY[name]()
+            all_forecasters[name] = registry[name]()
 
         for recal in recalibrations:
             recal_name = type(recal).__name__

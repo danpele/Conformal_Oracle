@@ -1,53 +1,42 @@
-"""TSFM forecaster wrappers (optional dependencies)."""
+"""TSFM forecaster wrappers — compatibility shim.
+
+.. deprecated:: 0.3.0
+    Import from ``conformal_oracle.contrib.tsfm`` instead.
+"""
 
 from __future__ import annotations
 
-from conformal_oracle.forecasters.tsfm._base import BaseTSFMForecaster
-from conformal_oracle.forecasters.tsfm._cache import TSFMPredictionCache
-
-__all__ = ["BaseTSFMForecaster", "TSFMPredictionCache"]
-
-try:
-    from conformal_oracle.forecasters.tsfm.chronos import ChronosForecaster
-
-    __all__ += ["ChronosForecaster"]
-except ImportError:
-    pass
-
-try:
-    from conformal_oracle.forecasters.tsfm.lag_llama import LagLlamaForecaster
-
-    __all__ += ["LagLlamaForecaster"]
-except ImportError:
-    pass
-
-try:
-    from conformal_oracle.forecasters.tsfm.timesfm import TimesFM25Forecaster
-
-    __all__ += ["TimesFM25Forecaster"]
-except ImportError:
-    pass
-
-try:
-    from conformal_oracle.forecasters.tsfm.moirai import MoiraiForecaster
-
-    __all__ += ["MoiraiForecaster"]
-except ImportError:
-    pass
+import warnings as _warnings
 
 
-def clear_cache() -> None:
-    """Remove all cached TSFM predictions."""
-    from pathlib import Path
+def __getattr__(name: str) -> object:
+    _NAMES = {
+        "BaseTSFMForecaster",
+        "TSFMPredictionCache",
+        "ChronosForecaster",
+        "LagLlamaForecaster",
+        "TimesFM25Forecaster",
+        "MoiraiForecaster",
+        "clear_cache",
+        "set_cache_limit",
+    }
+    if name in _NAMES:
+        _warnings.warn(
+            f"Importing {name} from conformal_oracle.forecasters.tsfm is "
+            f"deprecated since v0.3.0. Use "
+            f"conformal_oracle.contrib.tsfm instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        from conformal_oracle.contrib import tsfm
 
-    cache_root = Path.home() / ".cache" / "conformal-oracle"
-    if cache_root.exists():
-        for pkl in cache_root.rglob("*.pkl"):
-            pkl.unlink(missing_ok=True)
+        return getattr(tsfm, name)
+    raise AttributeError(
+        f"module 'conformal_oracle.forecasters.tsfm' has no attribute {name!r}"
+    )
 
 
-def set_cache_limit(max_gb: float = 5.0) -> None:
-    """Set cache size limit (applied at next write)."""
-    from conformal_oracle.forecasters.tsfm import _cache
-
-    _cache._DEFAULT_MAX_BYTES = int(max_gb * 1024 * 1024 * 1024)
+__all__ = [
+    "BaseTSFMForecaster",
+    "TSFMPredictionCache",
+]

@@ -115,6 +115,107 @@ class RollingAuditResult:
         )
 
 
+def _audit_rolling_from_quantiles(
+    returns: pd.Series,
+    q_lo: pd.Series,
+    alpha: float = 0.01,
+    window: int = 250,
+    warmup: int = 250,
+    persistence: int = 20,
+    seed: int = 2026,
+) -> RollingAuditResult:
+    """Rolling audit from a pre-computed quantile path.
+
+    Parameters
+    ----------
+    q_lo : pd.Series
+        The predicted lower-alpha quantile for each observation,
+        aligned to ``returns`` by index.
+    """
+    common = returns.index.intersection(q_lo.index)
+    if len(common) == 0:
+        raise ValueError(
+            "returns and forecast (q_lo) share no common index values"
+        )
+    returns = returns.loc[common]
+    q_lo = q_lo.loc[common]
+
+    n = len(returns)
+    # Use warmup observations for initial score accumulation
+    if warmup >= n:
+        raise ValueError(
+            f"warmup ({warmup}) must be smaller than the series length ({n})"
+        )
+
+    realised_all = returns.iloc[warmup:].values
+    q_lo_all = q_lo.iloc[warmup:].values
+
+    # Scores: S_t = q_lo_t - r_t
+    scores = q_lo_all - realised_all
+
+    qv_roll = compute_qv_roll_from_scores(scores, alpha, window)
+    drift = compute_drift_diagnostic(scores, window)
+
+    n_fc = len(scores)
+    n_eval = len(qv_roll)
+    offset = n_fc - n_eval
+
+    var_raw_eval = -q_lo_all[offset:]
+    realised_eval = realised_all[offset:]
+
+    var_corrected_eval = var_raw_eval + qv_roll
+
+    # ES not available from quantile-only path
+    es_raw_eval = np.full_like(var_raw_eval, np.nan)
+    es_corrected_eval = np.full_like(var_corrected_eval, np.nan)
+
+    viol_raw = (realised_eval < -var_raw_eval).astype(int)
+    viol_corrected = (realised_eval < -var_corrected_eval).astype(int)
+
+    repl_ratio = np.abs(qv_roll) / (np.abs(var_raw_eval) + 1e-12)
+    idx = returns.index[warmup + offset : warmup + offset + n_eval]
+    repl_ratio_series = pd.Series(
+        repl_ratio, index=idx, name="replacement_ratio",
+    )
+
+    regime = classify_regime_rolling(repl_ratio_series, persistence=persistence)
+
+    chris_corr = christoffersen_pvalue(viol_corrected, alpha)
+
+    return RollingAuditResult(
+        regime=regime,
+        q_v_roll=pd.Series(qv_roll, index=idx, name="qV_roll"),
+        replacement_ratio=repl_ratio_series,
+        drift_diagnostic=pd.Series(drift, index=idx, name="drift_TV"),
+        var_corrected=pd.Series(
+            var_corrected_eval, index=idx, name="VaR_corrected"
+        ),
+        violation_rate_raw=float(np.mean(viol_raw)),
+        violation_rate_corrected=float(np.mean(viol_corrected)),
+        basel_zone_raw=basel_traffic_light(viol_raw),
+        basel_zone_corrected=basel_traffic_light(viol_corrected),
+        kupiec_pvalue_corrected=kupiec_pof_pvalue(viol_corrected, alpha),
+        christoffersen_pvalue_corrected=chris_corr["joint"],
+        z2_statistic_corrected=float("nan"),
+        quantile_score_raw=quantile_score(realised_eval, -var_raw_eval, alpha),
+        quantile_score_corrected=quantile_score(
+            realised_eval, -var_corrected_eval, alpha
+        ),
+        fz_score_raw=float("nan"),
+        fz_score_corrected=float("nan"),
+        qs_sequence_raw=quantile_score_sequence(
+            realised_eval, -var_raw_eval, alpha
+        ),
+        qs_sequence_corrected=quantile_score_sequence(
+            realised_eval, -var_corrected_eval, alpha
+        ),
+        alpha=alpha,
+        window=window,
+        warmup=warmup,
+        n_test=n_eval,
+    )
+
+
 def audit_rolling(
     returns: pd.Series,
     forecaster: Forecaster,
