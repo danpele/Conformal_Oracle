@@ -1,5 +1,10 @@
 # conformal-oracle
 
+[![PyPI version](https://img.shields.io/pypi/v/conformal-oracle)](https://pypi.org/project/conformal-oracle/)
+[![Python](https://img.shields.io/pypi/pyversions/conformal-oracle)](https://pypi.org/project/conformal-oracle/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Downloads](https://img.shields.io/pypi/dm/conformal-oracle)](https://pypi.org/project/conformal-oracle/)
+
 Conformal recalibration audit for tail quantile forecasters.
 
 Given any return series and either a forecaster object or a
