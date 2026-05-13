@@ -15,18 +15,25 @@ from conformal_oracle.reporting.latex import comparison_to_latex
 
 
 def _get_benchmark_registry() -> dict[str, type]:
-    """Lazily import benchmark forecasters to avoid top-level arch dep."""
+    """Import benchmark forecasters; GARCH variants need arch>=6.0."""
     from conformal_oracle.contrib.benchmarks import (
-        GARCHNormalForecaster,
-        GJRGARCHForecaster,
         HistoricalSimulationForecaster,
     )
 
-    return {
-        "gjr_garch": GJRGARCHForecaster,
-        "garch_normal": GARCHNormalForecaster,
+    registry: dict[str, type] = {
         "hist_sim": HistoricalSimulationForecaster,
     }
+    try:
+        from conformal_oracle.contrib.benchmarks import (
+            GARCHNormalForecaster,
+            GJRGARCHForecaster,
+        )
+
+        registry["gjr_garch"] = GJRGARCHForecaster
+        registry["garch_normal"] = GARCHNormalForecaster
+    except ImportError:
+        pass
+    return registry
 
 
 @dataclass

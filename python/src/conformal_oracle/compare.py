@@ -31,7 +31,6 @@ class ComparisonResult:
     def dm_matrix(self) -> pd.DataFrame:
         """Pairwise DM p-value matrix."""
         names = sorted(self.results.keys())
-        n = len(names)
         matrix: dict[str, dict[str, float]] = {
             a: {b: float("nan") for b in names} for a in names
         }

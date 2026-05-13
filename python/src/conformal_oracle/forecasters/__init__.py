@@ -45,7 +45,8 @@ def __getattr__(name: str) -> object:
         from conformal_oracle.contrib import tsfm
 
         return getattr(tsfm, name)
-    raise AttributeError(f"module 'conformal_oracle.forecasters' has no attribute {name!r}")
+    msg = f"module 'conformal_oracle.forecasters' has no attribute {name!r}"
+    raise AttributeError(msg)
 
 
 # Eagerly populate __all__ so `from conformal_oracle.forecasters import *`

@@ -6,7 +6,6 @@ These emit DeprecationWarning and forward to the canonical API.
 from __future__ import annotations
 
 import warnings
-from typing import Union
 
 import pandas as pd
 

@@ -157,10 +157,6 @@ def _audit_static_from_quantiles(
 
     var_corrected = var_raw + q_v_stat
 
-    # ES is not available from a quantile-only path
-    es_raw = np.full_like(var_raw, np.nan)
-    es_corrected = np.full_like(var_corrected, np.nan)
-
     viol_raw = (test_returns < -var_raw).astype(int)
     viol_corrected = (test_returns < -var_corrected).astype(int)
 

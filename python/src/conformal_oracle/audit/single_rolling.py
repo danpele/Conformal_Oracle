@@ -165,10 +165,6 @@ def _audit_rolling_from_quantiles(
 
     var_corrected_eval = var_raw_eval + qv_roll
 
-    # ES not available from quantile-only path
-    es_raw_eval = np.full_like(var_raw_eval, np.nan)
-    es_corrected_eval = np.full_like(var_corrected_eval, np.nan)
-
     viol_raw = (realised_eval < -var_raw_eval).astype(int)
     viol_corrected = (realised_eval < -var_corrected_eval).astype(int)
 
