@@ -9,6 +9,8 @@ Verify:
 
 from __future__ import annotations
 
+import sys
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -16,7 +18,6 @@ import pytest
 from conformal_oracle.forecasters import HistoricalSimulationForecaster
 from conformal_oracle.panel import audit_panel
 
-import sys
 sys.path.insert(0, "tests")
 from fixtures.forecasters import ScaledForecaster
 

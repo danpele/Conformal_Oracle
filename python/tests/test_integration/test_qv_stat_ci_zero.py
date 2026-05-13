@@ -4,8 +4,12 @@ This is the methodological soundness test: a correctly-specified model
 should need negligible conformal correction.
 """
 
-from conformal_oracle import audit_static
-from conformal_oracle.forecasters import GJRGARCHForecaster
+import pytest
+
+arch = pytest.importorskip("arch")
+
+from conformal_oracle import audit_static  # noqa: E402
+from conformal_oracle.forecasters import GJRGARCHForecaster  # noqa: E402
 
 
 def test_qv_stat_within_ci_of_zero(synthetic_returns):

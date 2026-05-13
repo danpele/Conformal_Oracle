@@ -35,7 +35,7 @@ def test_latex_table_sorted(synthetic_returns):
 
 
 def test_latex_column_order(synthetic_returns):
-    """Verify manuscript column order: pi_hat, Kupiec, Chr., Basel, QS, FZ, qV, R, Regime."""
+    """Verify manuscript column order: pi_hat, Kupiec, Chr., Basel, etc."""
     fc = HistoricalSimulationForecaster(window=250)
     result = audit_static(synthetic_returns, fc, alpha=0.01)
     row = audit_result_to_latex_row(result, "Test")

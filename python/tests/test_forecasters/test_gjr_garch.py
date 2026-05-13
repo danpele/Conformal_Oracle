@@ -4,8 +4,10 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from conformal_oracle.forecasters.gjr_garch import GJRGARCHForecaster
-from conformal_oracle._types import ParametricDistribution
+arch = pytest.importorskip("arch")
+
+from conformal_oracle._types import ParametricDistribution  # noqa: E402
+from conformal_oracle.forecasters.gjr_garch import GJRGARCHForecaster  # noqa: E402
 
 
 def test_gjr_garch_returns_parametric(synthetic_returns):

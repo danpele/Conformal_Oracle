@@ -8,6 +8,8 @@ Verify:
 
 from __future__ import annotations
 
+import sys
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -18,7 +20,6 @@ from conformal_oracle.panel.cross_sectional import (
     compute_asset_characteristics,
 )
 
-import sys
 sys.path.insert(0, "tests")
 from fixtures.forecasters import ScaledForecaster
 

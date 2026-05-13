@@ -1,12 +1,10 @@
 """Tests for BenchmarkComparison.diebold_mariano() with HAC variance."""
 
 import numpy as np
-import pandas as pd
 import pytest
 
 from conformal_oracle.audit.benchmark import audit_with_benchmarks
 from conformal_oracle.forecasters.hist_sim import HistoricalSimulationForecaster
-
 from tests.fixtures.forecasters import ConstantZeroForecaster
 
 

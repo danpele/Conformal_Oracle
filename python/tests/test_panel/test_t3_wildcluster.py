@@ -7,7 +7,6 @@ more conservative (larger) than asymptotic p-values.
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 from conformal_oracle.panel.kupiec_panel import panel_kupiec_test
 from conformal_oracle.panel.wildcluster_bootstrap import (

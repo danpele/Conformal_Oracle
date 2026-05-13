@@ -2,7 +2,7 @@
 
 import pytest
 
-from conformal_oracle.audit.benchmark import audit_with_benchmarks, BenchmarkComparison
+from conformal_oracle.audit.benchmark import BenchmarkComparison, audit_with_benchmarks
 from conformal_oracle.forecasters.hist_sim import HistoricalSimulationForecaster
 
 

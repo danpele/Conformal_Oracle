@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from conformal_oracle import audit_static, audit_rolling
+from conformal_oracle import audit_rolling, audit_static
 from conformal_oracle.forecasters import HistoricalSimulationForecaster
 
 
@@ -25,7 +25,8 @@ def test_static_qs_sequence_mean_matches(synthetic_returns):
     fc = HistoricalSimulationForecaster(window=250)
     result = audit_static(synthetic_returns, fc, alpha=0.01)
     assert abs(np.mean(result.qs_sequence_raw) - result.quantile_score_raw) < 1e-10
-    assert abs(np.mean(result.qs_sequence_corrected) - result.quantile_score_corrected) < 1e-10
+    diff = np.mean(result.qs_sequence_corrected) - result.quantile_score_corrected
+    assert abs(diff) < 1e-10
 
 
 def test_rolling_fz_scores_finite(synthetic_returns):

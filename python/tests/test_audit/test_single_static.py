@@ -1,14 +1,18 @@
 """Tests for audit_static."""
 
-import numpy as np
-import pandas as pd
 import pytest
 
-from conformal_oracle.audit.single_static import audit_static, StaticAuditResult
-from conformal_oracle.forecasters.hist_sim import HistoricalSimulationForecaster
-from conformal_oracle.forecasters.gjr_garch import GJRGARCHForecaster
+arch = pytest.importorskip("arch")
 
-from tests.fixtures.forecasters import ScaledForecaster
+from conformal_oracle.audit.single_static import (  # noqa: E402
+    StaticAuditResult,
+    audit_static,
+)
+from conformal_oracle.forecasters.gjr_garch import GJRGARCHForecaster  # noqa: E402
+from conformal_oracle.forecasters.hist_sim import (  # noqa: E402
+    HistoricalSimulationForecaster,
+)
+from tests.fixtures.forecasters import ScaledForecaster  # noqa: E402
 
 
 def test_static_returns_result(synthetic_returns):

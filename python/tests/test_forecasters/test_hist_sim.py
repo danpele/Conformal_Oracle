@@ -3,8 +3,8 @@
 import numpy as np
 import pandas as pd
 
-from conformal_oracle.forecasters.hist_sim import HistoricalSimulationForecaster
 from conformal_oracle._types import SampleDistribution
+from conformal_oracle.forecasters.hist_sim import HistoricalSimulationForecaster
 
 
 def test_hist_sim_returns_sample():

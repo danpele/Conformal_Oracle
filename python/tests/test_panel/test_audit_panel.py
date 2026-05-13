@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pandas as pd
-
 from conformal_oracle.forecasters import HistoricalSimulationForecaster
 from conformal_oracle.panel import audit_panel
 from tests.fixtures.forecasters import ScaledForecaster

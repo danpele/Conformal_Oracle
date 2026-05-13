@@ -1,8 +1,8 @@
 """Tests for the audit() convenience dispatcher."""
 
 from conformal_oracle import audit
-from conformal_oracle.audit.single_static import StaticAuditResult
 from conformal_oracle.audit.single_rolling import RollingAuditResult
+from conformal_oracle.audit.single_static import StaticAuditResult
 from conformal_oracle.forecasters import HistoricalSimulationForecaster
 
 

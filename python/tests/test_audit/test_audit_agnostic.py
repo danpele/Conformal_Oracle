@@ -10,7 +10,6 @@ from conformal_oracle import audit
 from conformal_oracle.audit.single_rolling import RollingAuditResult
 from conformal_oracle.audit.single_static import StaticAuditResult
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------

@@ -2,11 +2,9 @@
 
 import numpy as np
 import pandas as pd
-import pytest
 
-from conformal_oracle.audit.single_rolling import audit_rolling, RollingAuditResult
+from conformal_oracle.audit.single_rolling import RollingAuditResult, audit_rolling
 from conformal_oracle.forecasters.hist_sim import HistoricalSimulationForecaster
-from conformal_oracle._types import SampleDistribution
 
 
 def test_rolling_returns_result(synthetic_returns):
