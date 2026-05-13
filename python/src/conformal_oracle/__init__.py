@@ -5,18 +5,18 @@ from __future__ import annotations
 import importlib
 from typing import TYPE_CHECKING
 
+from conformal_oracle._deprecated import (
+    audit_panel,
+    audit_rolling,
+    audit_static,
+    audit_with_benchmarks,
+)
 from conformal_oracle._protocols import Forecaster
 from conformal_oracle._types import (
     ParametricDistribution,
     PredictiveDistribution,
     QuantileGridDistribution,
     SampleDistribution,
-)
-from conformal_oracle._deprecated import (
-    audit_panel,
-    audit_rolling,
-    audit_static,
-    audit_with_benchmarks,
 )
 from conformal_oracle.audit import audit
 from conformal_oracle.classify import RegimeVerdict, classify_regime
