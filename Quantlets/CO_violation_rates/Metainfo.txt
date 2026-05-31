@@ -1,6 +1,6 @@
 Name of Quantlet: CO_violation_rates
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: Raw versus corrected violation rates for nine forecasters at alpha = 0.01, averaged across 24 assets (Figure 4). Side-by-side bar chart with 1% target line.
 

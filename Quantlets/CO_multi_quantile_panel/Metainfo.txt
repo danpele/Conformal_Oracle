@@ -1,6 +1,6 @@
 Name of Quantlet: CO_multi_quantile_panel
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: Three pooled-analysis tables. Table 5: multi-quantile evaluation at alpha in {0.01, 0.025, 0.05, 0.10}. Table 6: panel-pooled backtest with Driscoll-Kraay HAC standard errors. Table 7: backtest by asset class (equity, bond, commodity, crypto, FX).
 

@@ -1,6 +1,6 @@
 Name of Quantlet: CFP_ES_Correction_Z2
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: Heuristic Expected Shortfall correction and Acerbi-Szekely Z2 backtest (Table C.14). Implements Definition C.2 (conformal ES correction) and evaluates the Z2 statistic before and after correction across 9 forecasters and 24 financial assets.
 

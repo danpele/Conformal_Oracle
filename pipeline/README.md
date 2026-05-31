@@ -1,7 +1,7 @@
 # pipeline/ — Evaluation Pipeline Notebooks (documentation only)
 
 These notebooks document the full evaluation pipeline for the paper
-"Recalibrating Tail Event Forecasts under Temporal Dependence"
+"Recalibrating Tail Risk Forecasts under Temporal Dependence"
 (Pele, Bolovăneanu, Ginavar, Lessmann, Härdle, 2026).
 
 They are **not** Quantlets and are **not intended to be re-run**.

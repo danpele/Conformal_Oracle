@@ -1,6 +1,6 @@
 Name of Quantlet: CFP_Capital_Charge
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: Cumulative daily capital charges under Basel zone multipliers for raw versus conformally corrected VaR forecasts on S&P 500 (Figure 8). Compares Lag-Llama (Yellow zone, k=3.65) against corrected Lag-Llama and GJR-GARCH (Green zone, k=3.00).
 

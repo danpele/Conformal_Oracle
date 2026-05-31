@@ -1,6 +1,6 @@
 Name of Quantlet: CFP_Calibration_Efficiency_Frontier
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: Calibration-efficiency frontier showing raw-to-corrected trajectory for four representative forecasters on the coverage-width plane at alpha = 0.01 (Figure 3). Hollow markers indicate raw forecasts, filled markers indicate corrected, with arrows showing the conformal correction path.
 

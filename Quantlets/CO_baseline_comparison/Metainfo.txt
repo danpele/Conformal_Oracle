@@ -1,6 +1,6 @@
 Name of Quantlet: CO_baseline_comparison
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: Recalibration method comparison (Table 12). Assembles the 12-row composite table from six data sources covering conformal static, conformal rolling, scale correction, historical quantile, QR on residuals, ACI, isotonic regression, GBM-QR, GAMLSS-SST, EVT-POT, and filtered historical simulation.
 

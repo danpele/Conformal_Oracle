@@ -2,7 +2,7 @@
 
 Reproducible code units for all tables and figures in:
 
-> **Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence**
+> **Recalibrating Tail Risk Forecasts under Temporal Dependence**
 > Daniel Traian Pele, Stefan Lessmann, Wolfgang Karl Härdle (2026)
 
 Each Quantlet is a self-contained directory with a `Metainfo.txt` (QuantNet standard),

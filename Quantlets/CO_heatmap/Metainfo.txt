@@ -1,6 +1,6 @@
 Name of Quantlet: CO_heatmap
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: Basel Traffic Light heatmap for 9 models across 24 assets after conformal correction at alpha = 0.01 (Figure 2). Cell labels show annual violation counts scaled to 250 trading days. Green, Yellow, and Red zones follow the Basel Committee framework.
 

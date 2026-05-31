@@ -1,6 +1,6 @@
 Name of Quantlet: CO_simulation_study
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: Monte Carlo simulation study validating conformal correction under controlled distributional misspecification (Table 10 and Figure 5). Five DGPs (Normal, Student-t(5), Student-t(3), Hansen skewed-t, mixture Normals), 500 replications, T in {1000, 5000}. GARCH(1,1) with known parameters and Normal quantile forecaster.
 

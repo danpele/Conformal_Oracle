@@ -1,6 +1,6 @@
 Name of Quantlet: CO_drift_diagnostic
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: Distributional drift diagnostic via empirical total variation distance on rolling conformal scores for Lag-Llama on S&P 500 with w=250 (Figure 7). Splits each window into two halves, estimates TV distance via histogram binning, and applies the KS two-sample test as complementary significance assessment.
 

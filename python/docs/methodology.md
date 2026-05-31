@@ -3,7 +3,7 @@
 This package implements the conformal recalibration framework from:
 
 > Pele, D.T., Bolovăneanu, V., Ginavar, A.T., Lessmann, S., Härdle, W.K.
-> "Recalibrating Tail Event Forecasts under Temporal Dependence" (2026).
+> "Recalibrating Tail Risk Forecasts under Temporal Dependence" (2026).
 
 ## The conformal correction
 

@@ -1,6 +1,6 @@
 Name of Quantlet: CO_fz_scores
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: Fissler-Ziegel FZ_0 joint VaR-ES scores (Table 13). Reports raw and conformally corrected FZ_0 with percentage improvement for 9 models, equal-weighted mean across 24 assets at alpha = 0.01. Conformal ES correction applies the median-shift heuristic from Appendix C.
 

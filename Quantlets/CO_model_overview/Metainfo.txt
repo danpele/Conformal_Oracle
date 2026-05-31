@@ -1,6 +1,6 @@
 Name of Quantlet: CO_model_overview
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: Model overview table (Table 2). Two-panel structure listing five TSFMs (architecture, parameters, distribution, forecast output, context length) and four classical benchmarks (type, innovation distribution, estimated parameters, estimation window).
 

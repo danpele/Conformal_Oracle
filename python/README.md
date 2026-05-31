@@ -20,7 +20,7 @@ is required unless you use the built-in benchmark wrappers.
 Implements the methodology from:
 
 > Pele, D.T., Bolovaneanu, V., Ginavar, A.T., Lessmann, S., Hardle, W.K.
-> "Recalibrating Tail Event Forecasts under Temporal Dependence" (2026).
+> "Recalibrating Tail Risk Forecasts under Temporal Dependence" (2026).
 
 ## Install
 

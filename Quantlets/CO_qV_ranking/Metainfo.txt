@@ -1,6 +1,6 @@
 Name of Quantlet: CO_qV_ranking
 
-Published in: 'Recalibrating Tail Event Forecasts under Temporal Dependence'
+Published in: 'Recalibrating Tail Risk Forecasts under Temporal Dependence'
 
 Description: 'Horizontal bar chart of mean conformal correction magnitude q_V across 10 forecasters (24 assets, alpha = 0.01), color-coded by regime: replacement (red), under-covers (crimson), moderate/mild (blue), near-calibrated (green). Sorted descending by q_V. Produces Figure 5 of the paper.'
 

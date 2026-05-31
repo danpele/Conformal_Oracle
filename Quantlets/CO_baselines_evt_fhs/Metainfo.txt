@@ -1,6 +1,6 @@
 Name of Quantlet: CO_baselines_evt_fhs
 
-Published in: Distribution-Free Recalibration of Tail Quantile Forecasts under Temporal Dependence
+Published in: Recalibrating Tail Risk Forecasts under Temporal Dependence
 
 Description: EVT Peaks-over-Threshold and Filtered Historical Simulation applied to 24 assets with rolling 250-day windows. GARCH(1,1) pre-filtering with EWMA fallback when convergence fails. Produces the EVT-POT and FHS rows of Table 12.
 
