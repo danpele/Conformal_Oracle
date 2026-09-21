@@ -82,8 +82,8 @@ All three corrections use `ceil((n+1)(1-alpha))`, not an interpolated empirical
 quantile. When that rank exceeds the calibration-sample size, the existing
 implementation returns the sample maximum as a finite proxy; this case does
 not retain the usual finite-sample conformal coverage guarantee. See the
-[methodology](https://github.com/QuantLet/Conformal_Oracle/blob/main/python/docs/methodology.md)
-and [changelog](https://github.com/QuantLet/Conformal_Oracle/blob/main/python/CHANGELOG.md).
+[methodology](https://github.com/danpele/Conformal_Oracle/blob/main/python/docs/methodology.md)
+and [changelog](https://github.com/danpele/Conformal_Oracle/blob/main/python/CHANGELOG.md).
 
 ## R8: estimation cost, correction form and selection
 
@@ -138,7 +138,7 @@ pip install conformal-oracle[all]            # everything
 For development:
 
 ```bash
-git clone https://github.com/QuantLet/Conformal_Oracle.git
+git clone https://github.com/danpele/Conformal_Oracle.git
 cd Conformal_Oracle/python
 pip install -e ".[dev,benchmarks]"
 ```
@@ -287,7 +287,7 @@ time-t correction uses only outcomes before t; the initial decision remains
 fixed. The skip path needs no evaluation outcomes. An ex-post score comparison
 is separate from the policy and cannot be used to choose the initial decision.
 
-See the [API reference](https://github.com/QuantLet/Conformal_Oracle/blob/main/python/docs/api.md)
+See the [API reference](https://github.com/danpele/Conformal_Oracle/blob/main/python/docs/api.md)
 for the precise R7 Basel convention and a read-only artifact reproduction command.
 
 ## Quickstart -- with a forecaster object
@@ -354,18 +354,18 @@ result = audit(returns, MyForecaster(), alpha=0.01)
   outcomes separately; requires the complete replication artifacts.
 - [Quickstart (S&P 500)](examples/notebooks/quickstart_sp500.ipynb) --
   Static and rolling conformal audits with GJR-GARCH and Lag-Llama.
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/QuantLet/Conformal_Oracle/blob/main/python/examples/notebooks/quickstart_sp500.ipynb)
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danpele/Conformal_Oracle/blob/main/python/examples/notebooks/quickstart_sp500.ipynb)
 - [Legacy Table 4 replication](examples/notebooks/reproduce_table4_full.ipynb) --
   9 forecasters x 24 assets under an earlier protocol, with checkpointing.
   This notebook does not reproduce the current R7 tables.
-  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/QuantLet/Conformal_Oracle/blob/main/python/examples/notebooks/reproduce_table4_full.ipynb)
+  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/danpele/Conformal_Oracle/blob/main/python/examples/notebooks/reproduce_table4_full.ipynb)
 
 ## Documentation
 
-- [API Reference](https://github.com/QuantLet/Conformal_Oracle/blob/main/python/docs/api.md)
-- [Methodology](https://github.com/QuantLet/Conformal_Oracle/blob/main/python/docs/methodology.md)
-- [Conventions](https://github.com/QuantLet/Conformal_Oracle/blob/main/python/docs/conventions.md) (return units, VaR sign, alpha)
-- [Migration Guide (v0.3)](https://github.com/QuantLet/Conformal_Oracle/blob/main/python/docs/migration_v0.3.md)
+- [API Reference](https://github.com/danpele/Conformal_Oracle/blob/main/python/docs/api.md)
+- [Methodology](https://github.com/danpele/Conformal_Oracle/blob/main/python/docs/methodology.md)
+- [Conventions](https://github.com/danpele/Conformal_Oracle/blob/main/python/docs/conventions.md) (return units, VaR sign, alpha)
+- [Migration Guide (v0.3)](https://github.com/danpele/Conformal_Oracle/blob/main/python/docs/migration_v0.3.md)
 
 ## Requirements
 

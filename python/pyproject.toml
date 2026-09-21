@@ -32,11 +32,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/QuantLet/Conformal_Oracle"
-Repository = "https://github.com/QuantLet/Conformal_Oracle"
-Issues = "https://github.com/QuantLet/Conformal_Oracle/issues"
-Documentation = "https://github.com/QuantLet/Conformal_Oracle/blob/main/python/docs/api.md"
-Changelog = "https://github.com/QuantLet/Conformal_Oracle/blob/main/python/CHANGELOG.md"
+Homepage = "https://github.com/danpele/Conformal_Oracle"
+Repository = "https://github.com/danpele/Conformal_Oracle"
+Issues = "https://github.com/danpele/Conformal_Oracle/issues"
+Documentation = "https://github.com/danpele/Conformal_Oracle/blob/main/python/docs/api.md"
+Changelog = "https://github.com/danpele/Conformal_Oracle/blob/main/python/CHANGELOG.md"
 
 [project.optional-dependencies]
 benchmarks = [
